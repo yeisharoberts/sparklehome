@@ -1,5 +1,6 @@
 .parent-home{
     min-height: 100vh;
+    padding-bottom: 30px;
     background-color: gainsboro;
 }
 
@@ -19,7 +20,7 @@
 .title-desc{
     padding-left: 10%;
     padding-top: 10px;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .row-icon{
@@ -44,11 +45,77 @@
 }
 
 .btn-service{
-    background-color: white;
-    color: cadetblue;
-    height: 50px;
-    font-weight: 500;
+    background-color: whitesmoke !important;
+    color: cadetblue !important;
+    height: 40px !important;
+    font-weight: 600 !important;
     font-size: 18px;
-    border-color: white;
+    border-color: whitesmoke !important;
     border-radius: 25px;
+}
+
+.our-services{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 25px;
+    font-size: 35px;
+    font-weight: 600;
+}
+
+.row-services{
+    margin: 50px;
+}
+
+.gi-broom{
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    padding-top: 35px;
+    font-size: 110px;
+    color: chocolate;
+}
+
+.services1-desc{
+    padding-top: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    text-align: justify;
+    font-size: 13px;
+    color: darkgray;
+}
+
+.services1-title{
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+    font-weight: 700;
+}
+
+.tb-window{
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    padding-top: 35px;
+    font-size: 110px;
+    color: darkgrey;
+}
+
+.fahandswash{
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    padding-top: 35px;
+    font-size: 110px;
+    color: rgb(74, 123, 183);
+}
+
+.im-power{
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    padding-top: 35px;
+    font-size: 110px;
+    color: rgb(225, 211, 58);
 }

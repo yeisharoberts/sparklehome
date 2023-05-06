@@ -12,7 +12,7 @@ function Navigation() {
                 <div className='navigation'>
                     <Navbar>
                         <Container>
-                            <Navbar.Brand href="#home"><MdOutlineCleanHands /> SparkleHome</Navbar.Brand>
+                            <Navbar.Brand href="/"><MdOutlineCleanHands /> SparkleHome</Navbar.Brand>
                             <Navbar.Toggle />
                             <Navbar.Collapse className="justify-content-end">
                                 <Navbar.Text>
