@@ -28,7 +28,7 @@ const io = new Server(server, {
 })
 
 const _dirname = path.dirname('')
-const buildPath = path.join(__dirname, '../client/build')
+const buildPath = path.join(_dirname, '../client/build')
 
 app.use(express.static(buildPath))
 
