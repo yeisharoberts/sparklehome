@@ -1,0 +1,54 @@
+.parent-home{
+    min-height: 100vh;
+    background-color: gainsboro;
+}
+
+.home-header{
+    height: 500px;
+    width: 100%;
+    background-color: cadetblue;
+}
+
+.title-header{
+    padding-left: 10%;
+    padding-top: 10%;
+    font-size: 65px;
+    font-weight: 600;
+}
+
+.title-desc{
+    padding-left: 10%;
+    padding-top: 10px;
+    font-size: 20px;
+}
+
+.row-icon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-vacuum{
+    font-size: 380px;
+    color: paleturquoise;
+}
+
+.row-title{
+    margin-left: 20px;
+    padding: 50px;
+}
+
+.title-btn{
+    padding-left: 10%;
+    margin-top: 25px;
+}
+
+.btn-service{
+    background-color: white;
+    color: cadetblue;
+    height: 50px;
+    font-weight: 500;
+    font-size: 18px;
+    border-color: white;
+    border-radius: 25px;
+}
