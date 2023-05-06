@@ -27,18 +27,14 @@ const io = new Server(server, {
     }
 })
 
-const _dirname = path.dirname('')
-const buildPath = path.join(_dirname, '../client/build')
+const buildPath = path.join(__dirname, '../client/build');
 
-app.use(express.static(buildPath))
+app.use(express.static(buildPath));
 
-app.get('/*', function(req, res){
-    res.sendFile(
-        path.join(_dirname, '../client/build/index.html'),
-        function(err){
-            if (err){
-                res.status(500).send(err);
-            }
-        }
-    );
-})
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(buildPath, 'index.html'), function(err) {
+    if (err) {
+      res.status(500).send(err);
+    }
+  });
+});
