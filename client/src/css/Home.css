@@ -1,6 +1,5 @@
 .parent-home{
     min-height: 100vh;
-    padding-bottom: 30px;
     background-color: gainsboro;
 }
 
@@ -54,11 +53,16 @@
     border-radius: 25px;
 }
 
+.parent-our-services{
+    background-color: rgb(255, 255, 255);
+    padding-bottom: 25px;
+}
+
 .our-services{
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: 25px;
+    padding-top: 35px;
     font-size: 35px;
     font-weight: 600;
 }
@@ -118,4 +122,25 @@
     padding-top: 35px;
     font-size: 110px;
     color: rgb(225, 211, 58);
+}
+
+.parent-about-us{
+    padding-bottom: 25px;
+    padding-top: 25px;
+}
+
+.what-we-do{
+    display: grid;
+    place-items: center;
+    padding-top: 50px;
+    font-size: 35px;
+    font-weight: 600;
+}
+
+.what-we-do-text{
+    padding: 25px;
+    font-size: 15px;
+    text-align: center;
+    color:rgb(114, 114, 114);
+    padding-bottom: 80px;
 }
