@@ -1,0 +1,41 @@
+.admin-layout {
+  background-color: #eff5f6;
+  padding: 15px 0;
+}
+
+.nav-card {
+  background-color: #dfecec;
+  padding: 25px 15px !important;
+  height: 81vh;
+  box-shadow: 0 4px 10px #00000008, 0 0 2px #0000000f, 0 2px 6px #0000001f !important;
+}
+
+.admin-body-content {
+  padding: 25px !important;
+}
+
+.card {
+  border-radius: 13px;
+  background-color: white;
+  padding: 25px;
+  box-shadow: 0 4px 10px #00000008, 0 0 2px #0000000f, 0 2px 6px #0000001f !important;
+}
+
+.nav-link {
+  color: #395f60 !important;
+  text-align:left;
+}
+
+.nav-link.active {
+  color: white !important;
+  background-color: cadetblue !important;
+}
+
+.home-text{
+  text-align:center;
+  color: #263f40;
+}
+
+.svg-inline--fa{
+  margin-right: 10px;
+}
