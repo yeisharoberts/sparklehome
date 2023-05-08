@@ -4,7 +4,7 @@ import Home from './Home';
 // React
 import { Routes, Route } from 'react-router-dom';
 import Book_Cleaning from './Book_Cleaning';
-import Admin_Home from './Admin_Home';
+import Admin_Home from './admin_pages/Admin_Home';
 import { registerLicense } from '@syncfusion/ej2-base';
 import Admin_Layout from './admin_pages/Admin_Layout';
 
