@@ -4,9 +4,11 @@ const http = require('http')
 const Server = require('socket.io').Server
 const app = express()
 const path = require('path')
+const mysql = require('mysql')
 
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const { connect } = require('http2')
 
 
 app.use(express.json());
@@ -44,4 +46,23 @@ app.get('/*', function(req, res){
     );
 })
 //////////////////////////////////////DO NOT TOUCH///////////////////////////////////////////////////////
+
+//RDS MYSQL CONNECTION
+
+var connection = mysql.createConnection({
+    host: "database-sparklehome.cc0zdfgpl9qm.us-east-1.rds.amazonaws.com",
+    user: "adminsparklehome",
+    password: "adminsparklehome",
+    port: "3306"
+});
+
+connection.connect(function(err){
+    if(err){
+        console.error('Database connection failed: ' + err.stack);
+        return;
+    }
+    console.log('Connected to RDS.');
+});
+
+connection.end();
 

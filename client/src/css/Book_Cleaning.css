@@ -1,1 +1,27 @@
 @import url("https://cdn.syncfusion.com/ej2/material.css");
+
+.parent-maid-details{
+    padding: 20px;
+}
+
+.image-maid{
+    height: 200px;
+    width: 150px;
+}
+
+.available-cleaners-title{
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.maid-name{
+    display: flex;
+    justify-content: center;
+    font-size: 55px;
+}
+
+.btn-book{
+    margin-top: 6.7%;
+    display: flex;
+    justify-content: flex-end;
+}
