@@ -3,10 +3,10 @@ import Navigation from './Navigation';
 import Home from './Home';
 import Admin_Layout from './admin_pages/Admin_Layout';
 import Book_Cleaning from './Book_Cleaning';
-import Admin_Home from './admin_pages/Admin_Home';
 import Confirm_Booking from './Confirm_Booking';
 import Login from './Login';
 import Register from './Register';
+import Admin_Home from './admin_pages/Admin_Home';
 // React
 import { Routes, Route } from 'react-router-dom';
 import { registerLicense } from '@syncfusion/ej2-base';
