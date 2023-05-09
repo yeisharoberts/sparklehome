@@ -1,8 +1,13 @@
 import './../css/Admin_Layout.css'
 import React from 'react';
 import { Table, Button, Modal, Form, Stack } from 'react-bootstrap';
+import { DateTimePickerComponent } from '@syncfusion/ej2-react-calendars';
 
 function Manage_Schedule() {
+    const dateValue = new Date();
+    dateValue.setMinutes(0);
+    dateValue.setSeconds(0);
+    console.log(dateValue);
     const [showAddModal, setShowAddModal] = React.useState(false);
     const [users, setUsers] = React.useState([
         { id: 1, name: 'John Doe', email: 'johndoe@example.com' },
@@ -93,6 +98,9 @@ function Manage_Schedule() {
                                         }
                                     />
                                 </Form.Group>
+                                <DateTimePickerComponent placeholder='Choose a date and time'
+                                    value={dateValue} min={dateValue}></DateTimePickerComponent>
+
                             </Form>
                         </Modal.Body>
                         <Modal.Footer>

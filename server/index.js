@@ -43,8 +43,8 @@ app.use(
 
 const server = http.createServer(app)
 const io = new Server(server, {
-    cors:{
-        origin:'*'
+    cors: {
+        origin: '*'
     }
 })
 
@@ -64,24 +64,24 @@ var connection = mysql.createConnection({
     port: "3306"
 });
 
-connection.connect(function(err){
-    if(err){
+connection.connect(function (err) {
+    if (err) {
         console.error('Database connection failed: ' + err.stack);
         return;
     }
     console.log('Connected to RDS.');
 });
 
-connection.query('use sparklehome', function (err, results){
-    if(err) throw error;
+connection.query('use sparklehome', function (err, results) {
+    if (err) throw error;
     console.log("connected to database sparklehome");
 });
 
 app.get('/login_action', (req, res) => {
     if (req.session.user) {
-      res.send({ loggedIn: true, user: req.session.user });
+        res.send({ loggedIn: true, user: req.session.user });
     } else {
-      res.send({ loggedIn: false });
+        res.send({ loggedIn: false });
     }
 });
 
@@ -99,14 +99,14 @@ app.post('/user_register', (req, res) => {
     const password = req.body.userPassword;
     const phone = req.body.userPhone;
 
-    connection.query('INSERT INTO user (user_name, user_email, user_password, user_phone) VALUES (?, ?, ?, ?)', [name, email, password, phone], 
-    (err, result) => {
-        if(err){
-            console.log(err);
-        }else{
-            res.send(result);
-        }
-    });
+    connection.query('INSERT INTO user (user_name, user_email, user_password, user_phone) VALUES (?, ?, ?, ?)', [name, email, password, phone],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send(result);
+            }
+        });
 });
 
 app.post('/user_login', (req, res) => {
@@ -135,17 +135,118 @@ app.post('/logout_action', (req, res) => {
         .json({ success: true, message: "User logged out successfully" });
 });
 
-app.get('/*', function(req, res){
+//get all customers
+app.get('/get_all_customers', (req, res) => {
+    connection.query('SELECT * FROM sparklehome.user', (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        }
+        if (result.length > 0) {
+            res.send(result);
+        } else {
+            res.send({ status: 401, message: "Error Retrieving Customers!" });
+        }
+    });
+});
+
+// Update user data by user ID
+app.put('/update_user/:id', (req, res) => {
+    const userId = req.params.id;
+    const { user_name, user_email, user_password, user_phone } = req.body;
+
+    connection.query('UPDATE sparklehome.user SET user_name=?, user_email=?, user_password=?, user_phone=? WHERE user_id=?', [user_name, user_email, user_password, user_phone, userId], (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        } else {
+            res.send({ message: "User data updated successfully!" });
+        }
+    });
+});
+
+// Delete user by user ID
+app.delete('/delete_user/:id', (req, res) => {
+    const userId = req.params.id;
+
+    connection.query('DELETE FROM sparklehome.user WHERE user_id = ?', userId, (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        } else if (result.affectedRows === 0) {
+            res.send({ message: "User not found" });
+        } else {
+            res.send({ message: "User deleted successfully!" });
+        }
+    });
+});
+
+
+//maid
+//get all maids
+app.get('/get_all_maids', (req, res) => {
+    connection.query('SELECT * FROM sparklehome.maid', (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        }
+        if (result.length > 0) {
+            res.send(result);
+        } else {
+            res.send({ status: 401, message: "Error Retrieving Maids!" });
+        }
+    });
+});
+
+//add maid
+app.post('/add_maid', (req, res) => {
+    const name = req.body.maid_name;
+    const phone = req.body.maid_phone;
+
+    connection.query('INSERT INTO maid (maid_name, maid_phone) VALUES (?, ?)', [name, phone],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send({res: result, message: "Maid added successfully!"});
+            }
+        });
+});
+
+// Update maid data by maid ID
+app.put('/update_maid/:id', (req, res) => {
+    const maidId = req.params.id;
+    const { maid_name, maid_phone } = req.body;
+
+    connection.query('UPDATE sparklehome.maid SET maid_name=?, maid_phone=? WHERE maid_id=?', [maid_name, maid_phone, maidId], (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        } else {
+            res.send({ message: "Maid data updated successfully!" });
+        }
+    });
+});
+
+// Delete maid by maid ID
+app.delete('/delete_maid/:id', (req, res) => {
+    const maidId = req.params.id;
+
+    connection.query('DELETE FROM sparklehome.maid WHERE maid_id = ?', maidId, (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        } else if (result.affectedRows === 0) {
+            res.send({ message: "Maid not found" });
+        } else {
+            res.send({ message: "Maid deleted successfully!" });
+        }
+    });
+});
+
+app.get('/*', function (req, res) {
     res.sendFile(
         path.join(buildPath, 'index.html'),
-        function(err){
-            if (err){
+        function (err) {
+            if (err) {
                 res.status(500).send(err);
             }
         }
     );
 })
 
-
-  
 

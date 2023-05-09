@@ -1,38 +1,97 @@
+import Axios from 'axios';
 import './../css/Admin_Layout.css'
-import React from 'react';
-import { Table, Button, Modal, Form, Stack } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Table, Button, Modal, Form, Stack, Toast, ToastContainer } from 'react-bootstrap';
 
 function Manage_Customer() {
-    const [showAddModal, setShowAddModal] = React.useState(false);
-    const [users, setUsers] = React.useState([
-        { id: 1, name: 'John Doe', email: 'johndoe@example.com' },
-        { id: 2, name: 'Jane Doe', email: 'janedoe@example.com' },
-        { id: 3, name: 'Bob Smith', email: 'bobsmith@example.com' },
-    ]);
+    Axios.defaults.withCredentials = true;
+    const [users, setUsers] = useState([]);
+    const [editedUser, setEditedUser] = useState({});
+    const [showFormModal, setShowFormModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [buttonDisable, setButtonDisable] = useState(true);
+    const [selectedRow, setSelectedRow] = useState([]);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState();
 
-    const [newUser, setNewUser] = React.useState({ name: '', email: '' });
+    useEffect(() => {
+        Axios.get('http://localhost:5001/get_all_customers').then((res) => {
+            if (res.data) {
+                setUsers(res.data)
+            }
+        }).catch((err) => {
+            console.log("Error");
+            console.log(err);
+        });
+    }, []);
 
-    const handleAddModalClose = () => setShowAddModal(false);
-    const handleAddModalShow = () => setShowAddModal(true);
-
-    const handleAddUser = () => {
-        setUsers([...users, { ...newUser, id: users.length + 1 }]);
-        setNewUser({ name: '', email: '' });
-        setShowAddModal(false);
+    //edit
+    const handleShowForm = () => setShowFormModal(true);
+    const handleCloseForm = () => setShowFormModal(false);
+    const handleSaveForm = () => {
+        if (editedUser) {
+            updateUser(editedUser.user_id, editedUser);
+            const userIndex = users.findIndex(user => user.user_id === editedUser.user_id);
+            const updatedUsers = [...users];
+            updatedUsers[userIndex] = editedUser;
+            setUsers(updatedUsers);
+        } else {
+            setUsers([...users, { ...editedUser }]);
+            //add
+        }
+        setShowFormModal(false);
     };
+
+    const updateUser = (userId, updatedUserData) => {
+        Axios.put(`http://localhost:5001/update_user/${userId}`, updatedUserData)
+            .then((res) => {
+                setToastMessage(res.data.message);
+                setShowToast(true);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+
+    //delete
+    const handleShowDeleteModal = () => setShowDeleteModal(true);
+    const handleCloseDelete = () => setShowDeleteModal(false);
+    const handleDelete = () => {
+        if (editedUser) {
+            deleteUser(editedUser.user_id);
+            setUsers(users.filter(user => user.user_id !== editedUser.user_id));
+        }
+        setShowDeleteModal(false);
+    };
+    const deleteUser = (userId) => {
+        Axios.delete(`http://localhost:5001/delete_user/${userId}`)
+            .then((res) => {
+                setToastMessage(res.data.message);
+                setShowToast(true);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
 
     return (
         <>
+            <ToastContainer position="top-end" className="p-3">
+                <Toast onClose={() => setShowToast(false)} show={showToast} delay={3000} autohide>
+                    <Toast.Header>
+                        <strong className="me-auto">Success</strong>
+                    </Toast.Header>
+                    <Toast.Body>{toastMessage}</Toast.Body>
+                </Toast>
+            </ToastContainer>
+
             <Stack gap={3}>
                 <div className='card'>
                     <Stack direction="horizontal" gap={3}>
-                        <Button variant="primary" onClick={handleAddModalShow}>
-                            Add User
-                        </Button>
-                        <Button variant="warning">
+                        <Button disabled={buttonDisable} variant="warning" onClick={handleShowForm}>
                             Edit User
                         </Button>
-                        <Button variant="danger" >
+                        <Button disabled={buttonDisable} variant="danger" onClick={handleShowDeleteModal}>
                             Delete User
                         </Button>
                     </Stack>
@@ -40,68 +99,114 @@ function Manage_Customer() {
 
                 <div className='card'>
                     <Stack gap={3}>
-
                         <h1>Manage Customers</h1>
 
                         <Table striped bordered hover>
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Email</th>
+                                    <th>Phone Number</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {users.map((user) => (
-                                    <tr key={user.id}>
-                                        <td>{user.id}</td>
-                                        <td>{user.name}</td>
-                                        <td>{user.email}</td>
+                                    <tr key={user.user_id}>
+                                        <td>
+                                            <Form.Check
+                                                type="checkbox"
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedRow(user.user_id);
+                                                        setButtonDisable(false);
+                                                        setEditedUser(user);
+                                                    } else {
+                                                        setSelectedRow(null);
+                                                        setButtonDisable(true);
+                                                        setEditedUser({});
+                                                    }
+                                                }}
+                                                checked={selectedRow === user.user_id}
+                                            />
+                                        </td>
+                                        <td>{user.user_id}</td>
+                                        <td>{user.user_name}</td>
+                                        <td>{user.user_email}</td>
+                                        <td>{user.user_phone}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </Table>
                     </Stack>
 
-                    <Modal show={showAddModal} onHide={handleAddModalClose}>
+                    <Modal show={showFormModal} onHide={handleCloseForm}>
                         <Modal.Header closeButton>
                             <Modal.Title>Add User</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                             <Form>
-                                <Form.Group controlId="name">
+                                <Form.Group controlId="user_name">
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter name"
-                                        value={newUser.name}
+                                        value={editedUser.user_name}
                                         onChange={(e) =>
-                                            setNewUser({ ...newUser, name: e.target.value })
+                                            setEditedUser({ ...editedUser, user_name: e.target.value })
                                         }
                                     />
                                 </Form.Group>
-                                <Form.Group controlId="email">
+                                <Form.Group controlId="user_email">
                                     <Form.Label>Email address</Form.Label>
                                     <Form.Control
                                         type="email"
                                         placeholder="Enter email"
-                                        value={newUser.email}
+                                        value={editedUser.user_email}
                                         onChange={(e) =>
-                                            setNewUser({ ...newUser, email: e.target.value })
+                                            setEditedUser({ ...editedUser, user_email: e.target.value })
+                                        }
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="user_phone">
+                                    <Form.Label>Phone Number</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Enter phone"
+                                        value={editedUser.user_phone}
+                                        onChange={(e) =>
+                                            setEditedUser({ ...editedUser, user_phone: e.target.value })
                                         }
                                     />
                                 </Form.Group>
                             </Form>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="secondary" onClick={handleAddModalClose}>
+                            <Button variant="secondary" onClick={handleCloseForm}>
                                 Close
                             </Button>
-                            <Button variant="primary" onClick={handleAddUser}>
-                                Add User
+                            <Button variant="primary" onClick={handleSaveForm}>
+                                Save
                             </Button>
                         </Modal.Footer>
                     </Modal>
+
+                    <Modal show={showDeleteModal} onHide={handleCloseDelete}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Delete User</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>Are you sure you want to delete {editedUser.user_name}?</Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={handleCloseDelete}>
+                                Cancel
+                            </Button>
+                            <Button variant="primary" onClick={handleDelete}>
+                                Delete
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+
                 </div>
             </Stack>
         </>
