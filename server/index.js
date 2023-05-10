@@ -128,6 +128,19 @@ app.post('/user_login', (req, res) => {
     });
 });
 
+
+app.post('/admin_login', (req, res) => {
+    const email = req.body.inputEmail;
+    const password = req.body.inputPassword;
+    if (email === "sh-admin@gmail.com" && password === "Admin@123") {
+        req.session.user = [{ user_email: email, user_name: 'Admin', user_password: password }];
+        console.log(req.session.user);
+        res.send({ status: 200, message: "Admin Login Success!" });
+    } else {
+        res.send({ status: 401, message: "Incorrect Credentials!" });
+    }
+});
+
 app.post('/logout_action', (req, res) => {
     res.clearCookie("userId", { path: "/" });
     res
@@ -205,7 +218,7 @@ app.post('/add_maid', (req, res) => {
             if (err) {
                 console.log(err);
             } else {
-                res.send({res: result, message: "Maid added successfully!"});
+                res.send({ res: result, message: "Maid added successfully!" });
             }
         });
 });
@@ -264,7 +277,7 @@ app.post('/add_schedule', (req, res) => {
             if (err) {
                 console.log(err);
             } else {
-                res.send({res: result, message: "Schedule added successfully!"});
+                res.send({ res: result, message: "Schedule added successfully!" });
             }
         });
 });
