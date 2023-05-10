@@ -74,7 +74,7 @@
 .gi-broom{
     display: flex;
     justify-content: center;
-    align-items: end;
+    align-items: flex-end;
     padding-top: 35px;
     font-size: 110px;
     color: chocolate;
@@ -100,7 +100,7 @@
 .tb-window{
     display: flex;
     justify-content: center;
-    align-items: end;
+    align-items: flex-end;
     padding-top: 35px;
     font-size: 110px;
     color: darkgrey;
@@ -109,7 +109,7 @@
 .fahandswash{
     display: flex;
     justify-content: center;
-    align-items: end;
+    align-items: flex-end;
     padding-top: 35px;
     font-size: 110px;
     color: rgb(74, 123, 183);
@@ -118,7 +118,7 @@
 .im-power{
     display: flex;
     justify-content: center;
-    align-items: end;
+    align-items: flex-end;
     padding-top: 35px;
     font-size: 110px;
     color: rgb(225, 211, 58);

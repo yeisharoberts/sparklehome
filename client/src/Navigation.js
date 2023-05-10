@@ -29,7 +29,7 @@ function Navigation() {
         }).catch((err) => {
             console.log(err);
         });
-    }, []);
+    });
 
 
     const handleLogout = () => {
