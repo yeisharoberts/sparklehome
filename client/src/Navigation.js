@@ -49,6 +49,9 @@ function Navigation() {
                     <Navbar>
                         <Container>
                             <Navbar.Brand href="/"><MdOutlineCleanHands /> SparkleHome</Navbar.Brand>
+                            <Navbar.Text>
+                                <a href="/about" className='log-tag'>About Us</a>
+                            </Navbar.Text>
                             <Navbar.Toggle />
                             <Navbar.Collapse className="justify-content-end">
                                 {
