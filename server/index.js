@@ -198,8 +198,9 @@ app.get('/get_all_maids', (req, res) => {
 app.post('/add_maid', (req, res) => {
     const name = req.body.maid_name;
     const phone = req.body.maid_phone;
+    const image = req.body.maid_image;
 
-    connection.query('INSERT INTO maid (maid_name, maid_phone) VALUES (?, ?)', [name, phone],
+    connection.query('INSERT INTO maid (maid_name, maid_phone, maid_image) VALUES (?, ?, ?)', [name, phone, image],
         (err, result) => {
             if (err) {
                 console.log(err);
@@ -212,9 +213,9 @@ app.post('/add_maid', (req, res) => {
 // Update maid data by maid ID
 app.put('/update_maid/:id', (req, res) => {
     const maidId = req.params.id;
-    const { maid_name, maid_phone } = req.body;
+    const { maid_name, maid_phone, maid_image } = req.body;
 
-    connection.query('UPDATE sparklehome.maid SET maid_name=?, maid_phone=? WHERE maid_id=?', [maid_name, maid_phone, maidId], (err, result) => {
+    connection.query('UPDATE sparklehome.maid SET maid_name=?, maid_phone=?, maid_image=? WHERE maid_id=?', [maid_name, maid_phone, maid_image, maidId], (err, result) => {
         if (err) {
             res.send({ err: err });
         } else {
@@ -237,6 +238,66 @@ app.delete('/delete_maid/:id', (req, res) => {
         }
     });
 });
+
+//schedule
+//get all Schedule
+app.get('/get_all_schedules', (req, res) => {
+    connection.query('SELECT * FROM sparklehome.schedule', (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        }
+        if (result.length > 0) {
+            res.send(result);
+        } else {
+            res.send({ status: 401, message: "Error Retrieving Schedules!" });
+        }
+    });
+});
+
+//add schedule
+app.post('/add_schedule', (req, res) => {
+    const maid = req.body.maid_id;
+    const dateTime = req.body.schedule_datetime;
+
+    connection.query('INSERT INTO schedule (maid_id, schedule_datetime, booked) VALUES (?, ?, 0)', [maid, dateTime],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send({res: result, message: "Schedule added successfully!"});
+            }
+        });
+});
+
+// Update schedule data by schedule ID
+app.put('/update_schedule/:id', (req, res) => {
+    const scheduleId = req.params.id;
+    const { schedule_name, schedule_phone, schedule_image } = req.body;
+
+    connection.query('UPDATE sparklehome.schedule SET schedule_name=?, schedule_phone=?, schedule_image=? WHERE schedule_id=?', [schedule_name, schedule_phone, schedule_image, scheduleId], (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        } else {
+            res.send({ message: "Schedule data updated successfully!" });
+        }
+    });
+});
+
+// Delete schedule by schedule ID
+app.delete('/delete_schedule/:id', (req, res) => {
+    const scheduleId = req.params.id;
+
+    connection.query('DELETE FROM sparklehome.schedule WHERE schedule_id = ?', scheduleId, (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        } else if (result.affectedRows === 0) {
+            res.send({ message: "Schedule not found" });
+        } else {
+            res.send({ message: "Schedule deleted successfully!" });
+        }
+    });
+});
+
 
 app.get('/*', function (req, res) {
     res.sendFile(

@@ -1,9 +1,11 @@
+import AWS from 'aws-sdk';
 import Axios from 'axios';
 import './../css/Admin_Layout.css'
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Modal, Form, Stack, ToastContainer, Toast } from 'react-bootstrap';
+import { Table, Button, Modal, Form, Stack, ToastContainer, Toast, Image } from 'react-bootstrap';
 
 function Manage_Maid() {
+
     Axios.defaults.withCredentials = true;
     const [maids, setMaids] = useState([]);
     const [editedMaid, setEditedMaid] = useState({ maid_name: '', maid_phone: '' });
@@ -14,6 +16,11 @@ function Manage_Maid() {
     const [selectedRow, setSelectedRow] = useState([]);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState();
+    const [selectedFile, setSelectedFile] = useState(null);
+
+    const handleFileChange = (event) => {
+        setSelectedFile(event.target.files[0]);
+    };
 
     //get
     useEffect(() => {
@@ -44,11 +51,8 @@ function Manage_Maid() {
         setShowFormModal(false);
     };
     const addMaid = (newMaid) => {
-        console.log(newMaid);
         Axios.post(`http://localhost:5001/add_maid`, newMaid)
             .then((res) => {
-                console.log(res);
-                console.log(res.data.res.insertId);
                 setToastMessage(res.data.message);
                 setShowToast(true);
                 newMaid.maid_id = res.data.res.insertId;
@@ -59,6 +63,7 @@ function Manage_Maid() {
             });
     }
     const updateMaid = (maidId, updatedMaidData) => {
+        console.log(updatedMaidData);
         Axios.put(`http://localhost:5001/update_maid/${maidId}`, updatedMaidData)
             .then((res) => {
                 setToastMessage(res.data.message);
@@ -91,6 +96,37 @@ function Manage_Maid() {
                 console.log(err);
             });
     }
+
+
+    //aws s3
+    const s3 = new AWS.S3({
+        accessKeyId: 'ASIA5JH3I2CBCC6IIEUT',
+        secretAccessKey: 'dsi2zDXFxUnIntGfY7Aw+O/2Sowom14mwhALUmOu',
+        sessionToken: 'FwoGZXIvYXdzEHwaDIx+op7ajqht8etHASLJATT70X2IxySvgWV815bf7jO7ApIY2Cnf5Ljh7p6hUBKikvsTAgqooP33JmNd0YuVDMzr7YynU1o1gEZ5juMcxzpsP7vVeRtD07YTKGPppDI2u0yywaUklCLYVwDpO/pxYCaccIX0CFgJA8EljQ70TP5SKWDYliZarxXU5XVrhoXIFa+DBAUrvUET+6A9x6yB6acO/wEh3vcEZ5gO3CNsDWS0iOlJdQdtpfLh9GerqxVIt5OCtQ5Q/0ztXbekfxig9jSUkRDsjFT7mSihgOyiBjItcoBcoxDbnD/rII8oeH2JEEk7nK3KgVYRLHgdsOnKGdqnEBrSOZ/Dhrd2RziV',
+        region: 'us-east-1'
+    });
+
+    const handleUpload = () => {
+        if (selectedFile) {
+            const params = {
+                Bucket: 'sparkle-home-s3',
+                Key: 'maid/' + selectedFile.name,
+                Body: selectedFile,
+                ACL: 'public-read',
+                ContentType: 'image/jpeg'
+            };
+
+            s3.upload(params, (err, data) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    setToastMessage('Image uploaded successfully!');
+                    setEditedMaid({ ...editedMaid, maid_image: selectedFile.name })
+                    setShowToast(true);
+                }
+            });
+        }
+    };
 
     return (
         <>
@@ -156,7 +192,13 @@ function Manage_Maid() {
                                         <td>{maid.maid_id}</td>
                                         <td>{maid.maid_name}</td>
                                         <td>{maid.maid_phone}</td>
-                                        <td>{maid.maid_image}</td>
+                                        <td>{maid.maid_image && (
+                                            <Image
+                                                fluid
+                                                src={`https://sparkle-home-s3.s3.amazonaws.com/maid/${maid.maid_image}`}
+                                                roundedCircle
+                                            />
+                                        )}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -169,7 +211,7 @@ function Manage_Maid() {
                         </Modal.Header>
                         <Modal.Body>
                             <Form>
-                                <Form.Group controlId="maid_name">
+                                <Form.Group controlId="maid_name" className="mb-3">
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control
                                         type="text"
@@ -180,7 +222,7 @@ function Manage_Maid() {
                                         }
                                     />
                                 </Form.Group>
-                                <Form.Group controlId="maid_phone">
+                                <Form.Group controlId="maid_phone" className="mb-3">
                                     <Form.Label>Phone Number</Form.Label>
                                     <Form.Control
                                         type="text"
@@ -191,6 +233,20 @@ function Manage_Maid() {
                                         }
                                     />
                                 </Form.Group>
+                                <Form.Group controlId="maid_image" className="mb-1">
+                                    <Form.Label>Maid Image</Form.Label>
+                                    <Form.Control type="file" onChange={handleFileChange} />
+                                </Form.Group>
+                                <Button variant="primary" onClick={handleUpload}>
+                                    Upload Image
+                                </Button>
+                                {editedMaid.maid_image && (
+                                    <Image
+                                        fluid
+                                        src={`https://sparkle-home-s3.s3.amazonaws.com/maid/${editedMaid.maid_image}`}
+                                        roundedCircle
+                                    />
+                                )}
                             </Form>
                         </Modal.Body>
                         <Modal.Footer>
