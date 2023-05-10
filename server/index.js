@@ -289,12 +289,189 @@ app.post('/user_login', (req, res) => {
     });
 });
 
+
+app.post('/admin_login', (req, res) => {
+    const email = req.body.inputEmail;
+    const password = req.body.inputPassword;
+    if (email === "sh-admin@gmail.com" && password === "Admin@123") {
+        req.session.user = [{ user_email: email, user_name: 'Admin', user_password: password }];
+        console.log(req.session.user);
+        res.send({ status: 200, message: "Admin Login Success!" });
+    } else {
+        res.send({ status: 401, message: "Incorrect Credentials!" });
+    }
+});
+
 app.post('/logout_action', (req, res) => {
     res.clearCookie("userId", { path: "/" });
     res
         .status(200)
         .json({ success: true, message: "User logged out successfully" });
 });
+
+//get all customers
+app.get('/get_all_customers', (req, res) => {
+    connection.query('SELECT * FROM sparklehome.user', (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        }
+        if (result.length > 0) {
+            res.send(result);
+        } else {
+            res.send({ status: 401, message: "Error Retrieving Customers!" });
+        }
+    });
+});
+
+// Update user data by user ID
+app.put('/update_user/:id', (req, res) => {
+    const userId = req.params.id;
+    const { user_name, user_email, user_password, user_phone } = req.body;
+
+    connection.query('UPDATE sparklehome.user SET user_name=?, user_email=?, user_password=?, user_phone=? WHERE user_id=?', [user_name, user_email, user_password, user_phone, userId], (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        } else {
+            res.send({ message: "User data updated successfully!" });
+        }
+    });
+});
+
+// Delete user by user ID
+app.delete('/delete_user/:id', (req, res) => {
+    const userId = req.params.id;
+
+    connection.query('DELETE FROM sparklehome.user WHERE user_id = ?', userId, (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        } else if (result.affectedRows === 0) {
+            res.send({ message: "User not found" });
+        } else {
+            res.send({ message: "User deleted successfully!" });
+        }
+    });
+});
+
+
+//maid
+//get all maids
+app.get('/get_all_maids', (req, res) => {
+    connection.query('SELECT * FROM sparklehome.maid', (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        }
+        if (result.length > 0) {
+            res.send(result);
+        } else {
+            res.send({ status: 401, message: "Error Retrieving Maids!" });
+        }
+    });
+});
+
+//add maid
+app.post('/add_maid', (req, res) => {
+    const name = req.body.maid_name;
+    const phone = req.body.maid_phone;
+    const image = req.body.maid_image;
+
+    connection.query('INSERT INTO maid (maid_name, maid_phone, maid_image) VALUES (?, ?, ?)', [name, phone, image],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send({ res: result, message: "Maid added successfully!" });
+            }
+        });
+});
+
+// Update maid data by maid ID
+app.put('/update_maid/:id', (req, res) => {
+    const maidId = req.params.id;
+    const { maid_name, maid_phone, maid_image } = req.body;
+
+    connection.query('UPDATE sparklehome.maid SET maid_name=?, maid_phone=?, maid_image=? WHERE maid_id=?', [maid_name, maid_phone, maid_image, maidId], (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        } else {
+            res.send({ message: "Maid data updated successfully!" });
+        }
+    });
+});
+
+// Delete maid by maid ID
+app.delete('/delete_maid/:id', (req, res) => {
+    const maidId = req.params.id;
+
+    connection.query('DELETE FROM sparklehome.maid WHERE maid_id = ?', maidId, (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        } else if (result.affectedRows === 0) {
+            res.send({ message: "Maid not found" });
+        } else {
+            res.send({ message: "Maid deleted successfully!" });
+        }
+    });
+});
+
+//schedule
+//get all Schedule
+app.get('/get_all_schedules', (req, res) => {
+    connection.query('SELECT * FROM sparklehome.schedule', (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        }
+        if (result.length > 0) {
+            res.send(result);
+        } else {
+            res.send({ status: 401, message: "Error Retrieving Schedules!" });
+        }
+    });
+});
+
+//add schedule
+app.post('/add_schedule', (req, res) => {
+    const maid = req.body.maid_id;
+    const dateTime = req.body.schedule_datetime;
+
+    connection.query('INSERT INTO schedule (maid_id, schedule_datetime, booked) VALUES (?, ?, 0)', [maid, dateTime],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send({ res: result, message: "Schedule added successfully!" });
+            }
+        });
+});
+
+// Update schedule data by schedule ID
+app.put('/update_schedule/:id', (req, res) => {
+    const scheduleId = req.params.id;
+    const { schedule_name, schedule_phone, schedule_image } = req.body;
+
+    connection.query('UPDATE sparklehome.schedule SET schedule_name=?, schedule_phone=?, schedule_image=? WHERE schedule_id=?', [schedule_name, schedule_phone, schedule_image, scheduleId], (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        } else {
+            res.send({ message: "Schedule data updated successfully!" });
+        }
+    });
+});
+
+// Delete schedule by schedule ID
+app.delete('/delete_schedule/:id', (req, res) => {
+    const scheduleId = req.params.id;
+
+    connection.query('DELETE FROM sparklehome.schedule WHERE schedule_id = ?', scheduleId, (err, result) => {
+        if (err) {
+            res.send({ err: err });
+        } else if (result.affectedRows === 0) {
+            res.send({ message: "Schedule not found" });
+        } else {
+            res.send({ message: "Schedule deleted successfully!" });
+        }
+    });
+});
+
 
 app.get('/*', function (req, res) {
     res.sendFile(
@@ -306,7 +483,5 @@ app.get('/*', function (req, res) {
         }
     );
 })
-
-
 
 

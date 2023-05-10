@@ -24,10 +24,10 @@ function Login() {
     const navigate = useNavigate();
 
     const handleLogin = () => {
-        if(inputEmail.length < 1 || inputPassword.length < 1){
+        if (inputEmail.length < 1 || inputPassword.length < 1) {
             setEmpErr(false);
             setErrMsg(true);
-        }else {
+        } else {
             Axios.post('http://localhost:5001/user_login', {
                 inputEmail: inputEmail,
                 inputPassword: inputPassword
@@ -36,7 +36,7 @@ function Login() {
                 if (result.data.status === 401) {
                     setEmpErr(true);
                     setErrMsg(false);
-                }else{
+                } else {
                     navigate('/');
                 }
             });
@@ -65,6 +65,8 @@ function Login() {
                                             <Form.Control type="password" placeholder="Enter Password" onChange={(e) => { setInputPassword(e.target.value) }} />
                                         </Form.Group>
                                         <div>Don't have an account? Click <a href='/Register'>here</a> to create!</div>
+                                        <br />
+                                        <div><a href='/admin_login'>Admin Login</a></div>
                                         <div className='btn-login mt-4'>
                                             <Button variant="contained" color='primary' onClick={handleLogin}>
                                                 Submit
