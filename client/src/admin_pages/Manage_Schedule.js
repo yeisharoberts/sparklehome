@@ -148,6 +148,7 @@ function Manage_Schedule() {
                                     <th>ID</th>
                                     <th>Maid</th>
                                     <th>Date / Time</th>
+                                    <th>Scheduled Booked?</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -173,7 +174,7 @@ function Manage_Schedule() {
                                         <td>{schedule.schedule_id}</td>
                                         <td>{schedule.maid_id}</td>
                                         <td>{schedule.schedule_datetime}</td>
-
+                                        <td>{schedule.booked}</td>
                                     </tr>
                                 ))}
                             </tbody>
