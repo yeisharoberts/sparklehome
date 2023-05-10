@@ -303,6 +303,7 @@ app.post('/admin_login', (req, res) => {
 });
 
 app.post('/logout_action', (req, res) => {
+    req.session.user = [];
     res.clearCookie("userId", { path: "/" });
     res
         .status(200)
