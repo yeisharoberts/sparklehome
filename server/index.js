@@ -18,16 +18,11 @@ AWS.config.update({
 });
 app.use(bodyParser.json());
 
-// const lambda = new AWS.Lambda({
-//     accessKeyId: 'ASIATHXFDTBH2F3DDNWL',
-//     secretAccessKey: 'woGckyZCY4NTuI03Gl7Uq//uGyqGcOpS6XXO3MJy',
-//     region: 'us-east-1',
-// });
 const lambda = new AWS.Lambda();
 
 app.use(express.json());
 app.use(cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://3.91.217.1"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     // allowing the cookie to be enabled
     credentials: true
@@ -72,19 +67,6 @@ app.use(express.static(buildPath))
 
 // LAMBDA FUNCTION 
 const sns = new AWS.SNS();
-// const invokeLambda = async (functionName, payload) => {
-//     try {
-//         const params = {
-//             FunctionName: functionName,
-//             Payload: JSON.stringify(payload),
-//         };
-//         const result = await lambda.invoke(params).promise();
-//         return JSON.parse(result.Payload);
-//     } catch (error) {
-//         console.error('Error invoking Lambda function:', error);
-//         throw error;
-//     }
-// };
 
 app.post('/booking', async (req, res) => {
     try {
@@ -144,6 +126,19 @@ app.post('/booking', async (req, res) => {
     }
 });
 
+// const invokeLambda = async (functionName, payload) => {
+//     try {
+//         const params = {
+//             FunctionName: functionName,
+//             Payload: JSON.stringify(payload),
+//         };
+//         const result = await lambda.invoke(params).promise();
+//         return JSON.parse(result.Payload);
+//     } catch (error) {
+//         console.error('Error invoking Lambda function:', error);
+//         throw error;
+//     }
+// };
 
 // app.post('/booking', async (req, res) => {
 //     const schedule_id = req.body.schedule_id;
@@ -263,9 +258,6 @@ app.post('/user_register', (req, res) => {
             });
         });
 });
-
-
-
 
 app.post('/user_login', (req, res) => {
     const email = req.body.inputEmail;

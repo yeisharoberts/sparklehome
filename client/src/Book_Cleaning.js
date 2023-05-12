@@ -53,20 +53,6 @@ function Book_Cleaning() {
         }
     };
 
-    const handleBooking2 = async () => {
-        try {
-            const response = await fetch('https://ycct2v4jg4kqm63xq5lq4dhkwa0iqbss.lambda-url.us-east-1.on.aws/', {
-                method: 'POST',
-                body: JSON.stringify({ id: 5, user_name: 'John' }),
-            });
-            const data = await response.json();
-            setData(data);
-            console.log(data);
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
     useEffect(() => {
         Axios.get('http://localhost:5001/get_schedule').then((res) => {
             setScheduleList(res.data);
