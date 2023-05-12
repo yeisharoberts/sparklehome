@@ -8,13 +8,12 @@ const mysql = require('mysql')
 
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const { connect } = require('http2')
 
 const AWS = require('aws-sdk');
 AWS.config.update({
-    accessKeyId: 'ASIATHXFDTBH2F3DDNWL',
-    secretAccessKey: 'woGckyZCY4NTuI03Gl7Uq//uGyqGcOpS6XXO3MJy',
-    sessionToken: 'FwoGZXIvYXdzEHkaDF8rJyDcZPNFHzStkSLJAX2xJEK3pFwygtuZNqCP+97zM8RTh+0DStvj3Re+9fmrNQkFLkpNJgVa1tNcw3mVKQMDRtAJ9xIwADpkdaFO9TtinssLwqCQwubsYJyb439WnC5e9eodiW/IcdF4yRn/z+uPhbRs9mwE5G0RMctk7A1/1yxRCjQWNyeqqqSzWHq4MklNk6TTA/VS0LccZ9I34CTGfHgk7HC8ijdhVPP2MTJXB3irtT8guFRUva5QcQbgNOkyeWDqPdREdyrXetDKkCA3NfDNlEy4Xii/q+uiBjItzOvHd/FLQTVtGk1dpeyg4JjMu3LJgubqQozH7E2/C+y5zRNizLiAyKEG43iY',
+    accessKeyId: 'ASIATHXFDTBHRYAYO6OE',
+    secretAccessKey: 'eSd7KHVw/1K/tar/gm0DBEHcfUz/t8NNrnQZ2Tac',
+    sessionToken: 'FwoGZXIvYXdzEKz//////////wEaDB1hn9F7dE3aprwLECLJAaf8Ht82kRAbSwjXT0YdNeCJNKbj+AeXJOWtGJ5NHuTwGG46g/sQWOAfizPZ+6zrUVqzNekfLeUiRYOOD4yUa2kkr1V8PWSP2k4fTgF+7sP7kQcAJyux60PmXeooT6seVxzv+UcCQxaKJbtbDjc6ARkW0hGxsVOKeoO6pZqDYTf8f6qGrUnZSyOiXzUQuQ8yOVtB7D2dTtnQXPRIxeD2Y4XRWN7TvAwGUM6Rhfc/bP4hJGC5GBeFDm/574LQj9/vGU76y7H1hTQrcCiy1faiBjItb/C7/sAKPAnOXh3AhBsymFu2V9ZAlBq5Aw8eC+4raSRia32r9+2UaOC1sZiN',
     region: 'us-east-1'
 });
 app.use(bodyParser.json());
@@ -87,66 +86,64 @@ const sns = new AWS.SNS();
 //     }
 // };
 
-
 app.post('/booking', async (req, res) => {
+    try {
+        const schedule_id = req.body.schedule_id;
+        const user_id = req.body.user_id;
+        const user_email = req.body.user_email;
 
-    const email = req.body.user_email;
-    const name = req.body.user_name;
-    const message = `Dear ${name}, your booking has been confirmed!`;
-    const params = {
-        TopicArn: 'arn:aws:sns:us-east-1:222745040975:confirm-booking.fifo',
-        Message: message,
-        MessageAttributes: {
-            'email': {
-                DataType: 'String',
-                StringValue: email,
-            },
-        },
-    };
-    sns.publish(params, (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Failed to send booking confirmation email');
-        }
+        connection.query(
+            'INSERT INTO sparklehome.booking (user_id, schedule_id, booking_amount) VALUES (?, ?, ?)',
+            [user_id, schedule_id, 100.0], async (error, result) => {
+                if (error) {
+                    console.log(error);
+                    return handleBookingError(error, res);
+                }
 
-        console.log(data);
-        res.send('Booking confirmation email sent successfully');
-    });
+                const payload = { schedule_id: schedule_id };
 
-    // try {
-    //     const schedule_id = req.body.schedule_id;
-    //     const user_id = req.body.user_id;
-    //     const user_email = req.body.user_email;
+                const params = {
+                    FunctionName: 'update-schedule-booked',
+                    Payload: JSON.stringify(payload),
+                };
 
-    //     connection.query(
-    //         'INSERT INTO sparklehome.booking (user_id, schedule_id, booking_amount) VALUES (?, ?, ?)',
-    //         [user_id, schedule_id, 100.0], (error, result) => {
-    //             if (error) {
-    //                 console.log(error);
-    //             } else {
-    //                 res.send({ message: 'Booking successful' });
-    //             }
-    //         }
-    //     );
+                try {
+                    const data = await lambda.invoke(params).promise();
+                    console.log('Lambda response:', data.Payload);
+                } catch (error) {
+                    console.error('Lambda error:', error);
+                }
 
-    //     const payload = { schedule_id };
+                // Sending booking confirmation email to users using SNS
+                const email = req.body.user_email;
+                const name = req.body.user_name;
+                const message = `Dear ${name}, your booking has been confirmed!`;
+                const params2 = {
+                    TopicArn: 'arn:aws:sns:us-east-1:222745040975:ConfirmBooking',
+                    Message: message,
+                    MessageAttributes: {
+                        'email': {
+                            DataType: 'String',
+                            StringValue: email,
+                        },
+                    },
+                };
+                sns.publish(params2, (err, data) => {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).send('Failed to send booking confirmation email');
+                    }
 
-    //     const params = {
-    //         FunctionName: 'update-schedule-booked',
-    //         Payload: JSON.stringify(payload),
-    //     };
-
-    //     try {
-    //         const data = await lambda.invoke(params).promise();
-    //         console.log('Lambda response:', data.Payload);
-    //     } catch (error) {
-    //         console.error('Lambda error:', error);
-    //     }
-
-    // } catch (error) {
-    //     handleBookingError(error, res);
-    // }
+                    console.log(data);
+                    res.send('Booking confirmation email sent successfully');
+                });
+            }
+        );
+    } catch (error) {
+        handleBookingError(error, res);
+    }
 });
+
 
 // app.post('/booking', async (req, res) => {
 //     const schedule_id = req.body.schedule_id;
@@ -243,31 +240,31 @@ app.post('/user_register', (req, res) => {
             if (err) {
                 console.log(err);
                 return res.status(500).send('Failed to insert user');
-            }else{
-                res.send(result);
             }
 
-            // const params = {
-            //     Protocol: 'email',
-            //     TopicArn: 'arn:aws:sns:us-east-1:222745040975:confirm-booking.fifo',
-            //     Endpoint: email,
-            //     Attributes: {
-            //         FilterPolicy: JSON.stringify({
-            //             'email': [email],
-            //         }),
-            //     },
-            // };
-            // sns.subscribe(params, (error, data) => {
-            //     if (error) {
-            //         console.error(error);
-            //         return res.status(500).send('Failed to subscribe user');
-            //     }
+            const params = {
+                Protocol: 'email',
+                TopicArn: 'arn:aws:sns:us-east-1:222745040975:ConfirmBooking',
+                Endpoint: email,
+                Attributes: {
+                    FilterPolicy: JSON.stringify({
+                        'email': [email],
+                    }),
+                },
+            };
+            sns.subscribe(params, (error, data) => {
+                if (error) {
+                    console.error(error);
+                    return res.status(500).send('Failed to subscribe user');
+                }
 
-            //     console.log(data);
-            //     res.send('User subscribed successfully');
-            // });
+                console.log(data);
+                res.send('User subscribed successfully');
+            });
         });
 });
+
+
 
 
 app.post('/user_login', (req, res) => {

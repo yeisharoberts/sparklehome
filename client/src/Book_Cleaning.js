@@ -24,6 +24,7 @@ function Book_Cleaning() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [userId, setUserId] = useState(0);
     const [userEmail, setUserEmail] = useState('');
+    const [userName, setUserName] = useState('');
     const [data, setData] = useState(null);
 
     const handleClose = () => setBookingModal(false);
@@ -38,8 +39,8 @@ function Book_Cleaning() {
 
     // Handle Booking  
     const handleBooking = async (data) => {
-        Object.assign(data, {user_id: userId, user_email: userEmail});
-        console.log(typeof(data));
+        Object.assign(data, {user_id: userId, user_email: userEmail, user_name: userName});
+        console.log(data);
         try {
             //insert data into booking table
             Axios.post('http://localhost:5001/booking', data).then((res) => {
@@ -75,6 +76,7 @@ function Book_Cleaning() {
             if (res.data.loggedIn) {
                 setUserId(res.data.user[0].user_id);
                 setUserEmail(res.data.user[0].user_email);
+                setUserName(res.data.user[0].user_name);
             }
         }).catch((err) => {
             console.log(err);
