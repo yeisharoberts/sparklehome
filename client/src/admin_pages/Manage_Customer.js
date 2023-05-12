@@ -143,7 +143,7 @@ function Manage_Customer() {
 
                     <Modal show={showFormModal} onHide={handleCloseForm}>
                         <Modal.Header closeButton>
-                            <Modal.Title>Add User</Modal.Title>
+                            <Modal.Title>Customer Detail</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                             <Form>
