@@ -28,7 +28,7 @@ function Login() {
             setEmpErr(false);
             setErrMsg(true);
         } else {
-            Axios.post('http://3.91.217.1/user_login', {
+            Axios.post('http://localhost:5001/user_login', {
                 inputEmail: inputEmail,
                 inputPassword: inputPassword
             }).then((result) => {

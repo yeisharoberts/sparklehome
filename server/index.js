@@ -11,9 +11,9 @@ const bodyParser = require('body-parser')
 
 const AWS = require('aws-sdk');
 AWS.config.update({
-    accessKeyId: 'ASIATHXFDTBHRYAYO6OE',
-    secretAccessKey: 'eSd7KHVw/1K/tar/gm0DBEHcfUz/t8NNrnQZ2Tac',
-    sessionToken: 'FwoGZXIvYXdzEKz//////////wEaDB1hn9F7dE3aprwLECLJAaf8Ht82kRAbSwjXT0YdNeCJNKbj+AeXJOWtGJ5NHuTwGG46g/sQWOAfizPZ+6zrUVqzNekfLeUiRYOOD4yUa2kkr1V8PWSP2k4fTgF+7sP7kQcAJyux60PmXeooT6seVxzv+UcCQxaKJbtbDjc6ARkW0hGxsVOKeoO6pZqDYTf8f6qGrUnZSyOiXzUQuQ8yOVtB7D2dTtnQXPRIxeD2Y4XRWN7TvAwGUM6Rhfc/bP4hJGC5GBeFDm/574LQj9/vGU76y7H1hTQrcCiy1faiBjItb/C7/sAKPAnOXh3AhBsymFu2V9ZAlBq5Aw8eC+4raSRia32r9+2UaOC1sZiN',
+    accessKeyId: 'ASIATHXFDTBHWRK3RURQ',
+    secretAccessKey: 'PD6kls+JjlW9Ng3k2Hv/vAg5CHRIv+0d65fUA6Nn',
+    sessionToken: 'FwoGZXIvYXdzEBEaDGW7/mkfDIKcZIBBCCLJAQereba+fWpoECTJtpyGl57YxhUTkbc57cl9uSdc8vyX2qfx/NdLajPF4HanOCn7z3oNqAu5+43tElcOauQd2oAXBsiDeH/t9I0lcmuxLoh1FwkbgfFBbRzNXINqfEuErJHrnFSeVZCDm/09m5Cli5ZiE3kFWHToIW5VVoZpI4PmvtgSxoqCTqlDX8c+ZbkPlg6f8z37MLI+Bfyra4bRDir5RCMLOlotDLpXSpResF5SWt7ym0C4jXaZvNE+mxfMjTKuvSeZoEvzLSjV44yjBjIt5/dAFkLCl9+2J4Q1LioynL3Dvsxem/M3PdFGI0tHtFEWKIGTz2BzCFy7WPy+',
     region: 'us-east-1'
 });
 app.use(bodyParser.json());
@@ -22,7 +22,8 @@ const lambda = new AWS.Lambda();
 
 app.use(express.json());
 app.use(cors({
-    origin: ["http://3.91.217.1"],
+    origin: ["http://localhost:3000"],
+    // origin: ["http://3.91.217.1"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     // allowing the cookie to be enabled
     credentials: true
@@ -72,18 +73,21 @@ app.post('/booking', async (req, res) => {
     try {
         const schedule_id = req.body.schedule_id;
         const user_id = req.body.user_id;
-        const user_email = req.body.user_email;
+        const booking_date = req.body.booking_date;
+        const email_date = req.body.sns_booking_date;
+        const maid_name = req.body.maid_name;
+        const maid_phone = req.body.maid_phone;
 
         connection.query(
-            'INSERT INTO sparklehome.booking (user_id, schedule_id, booking_amount) VALUES (?, ?, ?)',
-            [user_id, schedule_id, 100.0], async (error, result) => {
+            'INSERT INTO sparklehome.booking (user_id, schedule_id, booking_amount, booking_datetime) VALUES (?, ?, ?, ?)',
+            [user_id, schedule_id, 100.0, booking_date], async (error, result) => {
                 if (error) {
                     console.log(error);
-                    return handleBookingError(error, res);
+                    res.status(500).send('An error occurred during booking');
                 }
 
                 const payload = { schedule_id: schedule_id };
-
+                console.log(payload)
                 const params = {
                     FunctionName: 'update-schedule-booked',
                     Payload: JSON.stringify(payload),
@@ -99,7 +103,8 @@ app.post('/booking', async (req, res) => {
                 // Sending booking confirmation email to users using SNS
                 const email = req.body.user_email;
                 const name = req.body.user_name;
-                const message = `Dear ${name}, your booking has been confirmed!`;
+                const message = `Dear ${name}, \n\nThank you for using SparkleHome!\n\nYour booking has been confirmed. Please check your booking details below:
+                \n\nDate & Time: ${email_date}\nCleaner Name: ${maid_name}\nCleaner Contact: ${maid_phone}\n\nBest Regards,\nSparkleHome Team`;
                 const params2 = {
                     TopicArn: 'arn:aws:sns:us-east-1:222745040975:ConfirmBooking',
                     Message: message,
@@ -122,7 +127,7 @@ app.post('/booking', async (req, res) => {
             }
         );
     } catch (error) {
-        handleBookingError(error, res);
+        res.status(500).send('An error occurred during booking');
     }
 });
 
@@ -203,6 +208,14 @@ connection.query('use sparklehome', function (err, results) {
     if (err) throw error;
     console.log("connected to database sparklehome");
 });
+
+setInterval(() => {
+    connection.query('SELECT 1', (error, results) => {
+      if (error) {
+        console.error('Error executing keep-alive query:', error);
+      }
+    });
+  }, 5 * 60 * 1000); // 5 minutes
 
 app.get('/login_action', (req, res) => {
     if (req.session.user) {

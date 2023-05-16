@@ -41,7 +41,6 @@ function Navigation() {
         });
     }
 
-
     return (
         <>
             <div className="parent-navigation">

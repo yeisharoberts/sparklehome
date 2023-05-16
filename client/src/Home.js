@@ -40,10 +40,10 @@ function Home() {
 
                 <div className='parent-about-us'>
                     <div className='what-we-do'>
-                        What We Do
+                        Top Cleaning Company in Malaysia
                     </div>
                     <div className='what-we-do-text'>
-                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
+                        We are the top cleaning company in Malaysia. We are an established and reputable cleaning company which has been operating in the cleaning industry since 2010. We have cleaned many houses and offices for the past decade winning the hearts of many satisfied customers. We have a few teams of efficient, honest and loyal cleaning crews who do cleaning jobs effectively and efficiently. Customer satisfaction is always our number 1 priority.
                     </div>
                 </div>
 
@@ -56,7 +56,7 @@ function Home() {
                         <Row>
                             <Col>
                                 <div>
-                                    <Card>
+                                    <Card className='card-services'>
                                         <div>
                                             <div className='gi-broom'>
                                                 <GiBroom />
@@ -65,7 +65,7 @@ function Home() {
                                                 Floor and Carpet
                                             </div>
                                             <div className='services1-desc'>
-                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                                We can assist you with all kinds of carpet cleaning services such as carpet steam cleaning, carpet dry cleaning, carpet stain removal and carpet repair.
                                             </div>
                                         </div>
                                     </Card>
@@ -73,7 +73,7 @@ function Home() {
                             </Col>
                             <Col>
                                 <div>
-                                    <Card>
+                                    <Card className='card-services'>
                                         <div>
                                             <div className='tb-window'>
                                                 <TbWindow />
@@ -82,7 +82,7 @@ function Home() {
                                                 Window Washing
                                             </div>
                                             <div className='services1-desc'>
-                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                                We can thoroughly clean the glass on your windows and keep it in top condition.
                                             </div>
                                         </div>
                                     </Card>
@@ -90,7 +90,7 @@ function Home() {
                             </Col>
                             <Col>
                                 <div>
-                                    <Card>
+                                    <Card className='card-services'>
                                         <div>
                                             <div className='fahandswash'>
                                                 <FaHandsWash />
@@ -99,7 +99,7 @@ function Home() {
                                                 Janitorial Services
                                             </div>
                                             <div className='services1-desc'>
-                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                                We provide trash removal services from your home, office or business so that you will have a clean environment.
                                             </div>
                                         </div>
                                     </Card>
@@ -107,7 +107,7 @@ function Home() {
                             </Col>
                             <Col>
                                 <div>
-                                    <Card>
+                                    <Card className='card-services'>
                                         <div>
                                             <div className='im-power'>
                                                 <ImPower />
@@ -116,7 +116,7 @@ function Home() {
                                                 Power Washing
                                             </div>
                                             <div className='services1-desc'>
-                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                                We offer appliance deep clean service. Deep cleaning your home is one of the best ways to ensure that your home is a safe and comfortable place to relax.
                                             </div>
                                         </div>
                                     </Card>

@@ -1,17 +1,24 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import './css/Book_Cleaning.css';
 // Images
 import Chris from './img/chris.jpg'
-import Samantha from './img/samantha.jpg'
 // Bootstrap
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import Alert from '@mui/material/Alert';
 import Modal from 'react-bootstrap/Modal';
 // Material UI
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
+
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import PersonIcon from '@mui/icons-material/Person';
+import Divider from '@mui/material/Divider';
 // Syncfusion
 import { DateTimePickerComponent } from '@syncfusion/ej2-react-calendars';
 
@@ -25,32 +32,35 @@ function Book_Cleaning() {
     const [userId, setUserId] = useState(0);
     const [userEmail, setUserEmail] = useState('');
     const [userName, setUserName] = useState('');
-    const [data, setData] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(null);
 
     const handleClose = () => setBookingModal(false);
-    const handleShow = () => setBookingModal(true);
-
+    const handleShow = (item) => {
+        setBookingModal(true);
+        setSelectedItem(item);
+    }
 
     // Syncfusion DateTime Picker
     const handleDateChange = (date) => {
         let temp_date = new Date(date);
-        setCurrentDate(temp_date.getDate());
+        setCurrentDate(temp_date);
     }
 
     // Handle Booking  
     const handleBooking = async (data) => {
-        Object.assign(data, {user_id: userId, user_email: userEmail, user_name: userName});
-        console.log(data);
+        Object.assign(data, { user_id: userId, user_email: userEmail, user_name: userName, booking_date: currentDate.toISOString().slice(0, 19).replace('T', ' '), sns_booking_date: currentDate });
         try {
             //insert data into booking table
             Axios.post('http://localhost:5001/booking', data).then((res) => {
                 console.log(res);
+                if (res.status === 200){
+                    navigate('/Booking_Confirmation');
+                }
             });
-
-            console.log('Booking successful!');
-        } catch(error){
+        } catch (error) {
             console.log(error);
         }
+
     };
 
     useEffect(() => {
@@ -82,57 +92,101 @@ function Book_Cleaning() {
                             List of Available Cleaners
                         </div>
 
-                        {
-                            scheduleList.filter((val) => {
-                                let temp = new Date(val.schedule_datetime);
-                                return temp.getDate() === currentDate
-                            }).map((value) => {
-                                return (
-                                    <>
-                                        <div className='mt-4'>
-                                            <Paper>
-                                                <div className='parent-maid-details'>
-                                                    <Row>
-                                                        <Col xs={2}>
-                                                            <div>
+                        <div class="container-maid mt-4">
+                            {
+                                scheduleList.filter((val) => {
+                                    const date = new Date(currentDate);
+                                    const formattedDate = date.toISOString();
+                                    return val.schedule_datetime.slice(0, 10) === formattedDate.slice(0, 10)
+                                }).map((value) => {
+                                    return (
+                                        <>
+                                            <React.Fragment key={value.id}>
+                                                <div class="item">
+                                                    <Paper>
+                                                        <div className='parent-paper'>
+                                                            <div className='parent-image-maid'>
                                                                 <img src={Chris} alt="Paris" className='image-maid' />
                                                             </div>
-                                                        </Col>
 
-                                                        <Col>
                                                             <div>
                                                                 <div className='maid-name'>
                                                                     {value.maid_name}
                                                                 </div>
                                                                 <hr />
                                                                 <div className='btn-book'>
-                                                                    <Button variant="contained" color="primary" onClick={handleShow}>
+                                                                    <Button variant="contained" color="primary" onClick={() => handleShow(value)}>
                                                                         Book
                                                                     </Button>
                                                                 </div>
                                                             </div>
-                                                        </Col>
-                                                    </Row>
+                                                        </div>
+                                                    </Paper>
                                                 </div>
-                                            </Paper>
-                                        </div>
-                                        <Modal show={bookingModal} onHide={handleClose}>
-                                            <Modal.Header closeButton>
-                                                <Modal.Title>Confirm Booking</Modal.Title>
-                                            </Modal.Header>
-                                            <Modal.Body>Confirm Booking for this slot?</Modal.Body>
-                                            <Modal.Footer>
-                                                <Button variant="contained" color='success' onClick={()=>{handleBooking(value)}}>
-                                                    Confirm Booking
-                                                </Button>
-                                            </Modal.Footer>
-                                        </Modal>
-                                    </>
-                                );
-                            })
-                        }
+                                            </React.Fragment>
+                                            {selectedItem && (
+                                                <Modal show={bookingModal} onHide={handleClose}>
+                                                    <Modal.Header closeButton>
+                                                        <Modal.Title>Confirm Booking</Modal.Title>
+                                                    </Modal.Header>
+                                                    <Modal.Body>
+                                                        <Alert severity="warning">
+                                                            Confirm Booking for this slot? Please check details below:
+                                                        </Alert>
+                                                        <List
+                                                            sx={{
+                                                                width: '100%',
+                                                                maxWidth: 360,
+                                                                bgcolor: 'background.paper',
+                                                            }}
+                                                        >
+                                                            <ListItem>
+                                                                <ListItemAvatar>
+                                                                    <Avatar>
+                                                                        <CalendarMonthIcon />
+                                                                    </Avatar>
+                                                                </ListItemAvatar>
+                                                                <ListItemText
+                                                                    primary="Date & Time"
+                                                                    secondary={currentDate.toLocaleString()}
+                                                                />
+                                                            </ListItem>
+                                                            <Divider variant="inset" component="li" />
+                                                            <ListItem>
+                                                                <ListItemAvatar>
+                                                                    <Avatar>
+                                                                        <PersonIcon />
+                                                                    </Avatar>
+                                                                </ListItemAvatar>
+                                                                <ListItemText
+                                                                    primary="Cleaner"
+                                                                    secondary={selectedItem.maid_name}
+                                                                />
+                                                            </ListItem>
+                                                        </List>
+                                                    </Modal.Body>
+                                                    <Modal.Footer>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="success"
+                                                            onClick={() => {
+                                                                handleBooking(selectedItem);
+                                                            }}
+                                                        >
+                                                            Confirm Booking
+                                                        </Button>
+                                                    </Modal.Footer>
+                                                </Modal>
+                                            )}
+                                        </>
+                                    );
+                                })
+                            }
+                        </div>
+
                     </div>
                 </div>
+
             </div>
         </>
     );

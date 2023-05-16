@@ -125,8 +125,8 @@
 }
 
 .parent-about-us{
-    padding-bottom: 25px;
-    padding-top: 25px;
+    padding-top: 30px;
+    background-color: white;
 }
 
 .what-we-do{
@@ -143,4 +143,8 @@
     text-align: center;
     color:rgb(114, 114, 114);
     padding-bottom: 80px;
+}
+
+.card-services{
+    height: 355px !important;
 }

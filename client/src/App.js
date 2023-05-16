@@ -12,6 +12,7 @@ import { Routes, Route } from 'react-router-dom';
 import { registerLicense } from '@syncfusion/ej2-base';
 import About from './About';
 import Admin_Login from './admin_pages/Admin_Login';
+import Booking_Confirmation from './Booking_Confirmation';
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path="/admin/*" element={<Admin_Layout />} />
         <Route path="/Confirm_Booking" element={<Confirm_Booking />} />
         <Route path="/Register" element={<Register />} />
+        <Route path='/Booking_Confirmation' element={<Booking_Confirmation />} />
       </Routes>
     </div>
   );
