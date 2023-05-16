@@ -196,7 +196,6 @@ function Manage_Maid() {
                                             <Image
                                                 fluid
                                                 src={`https://sparkle-home-s3.s3.amazonaws.com/maid/${maid.maid_image}`}
-                                                roundedCircle
                                             />
                                         )}</td>
                                     </tr>
@@ -244,7 +243,6 @@ function Manage_Maid() {
                                     <Image
                                         fluid
                                         src={`https://sparkle-home-s3.s3.amazonaws.com/maid/${editedMaid.maid_image}`}
-                                        roundedCircle
                                     />
                                 )}
                             </Form>
