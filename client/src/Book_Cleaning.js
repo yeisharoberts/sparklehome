@@ -92,7 +92,7 @@ function Book_Cleaning() {
                             List of Available Cleaners
                         </div>
 
-                        <div class="container-maid mt-4">
+                        <div className="container-maid mt-4">
                             {
                                 scheduleList.filter((val) => {
                                     const date = new Date(currentDate);
@@ -106,7 +106,7 @@ function Book_Cleaning() {
                                                     <Paper>
                                                         <div className='parent-paper'>
                                                             <div className='parent-image-maid'>
-                                                                <img src={Chris} alt="Paris" className='image-maid' />
+                                                                <img src={`https://sparkle-home-s3.s3.amazonaws.com/maid/${value.maid_image}`} alt="Paris" className='image-maid' />
                                                             </div>
 
                                                             <div>
