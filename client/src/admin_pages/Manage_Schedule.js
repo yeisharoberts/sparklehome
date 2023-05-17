@@ -69,6 +69,7 @@ function Manage_Schedule() {
                 setToastMessage(res.data.message);
                 setShowToast(true);
                 newSchedule.schedule_id = res.data.res.insertId;
+                newSchedule.booked='0';
                 setSchedules([...schedules, { ...newSchedule }]);
             })
             .catch((err) => {
@@ -94,6 +95,7 @@ function Manage_Schedule() {
         if (editedSchedule) {
             deleteSchedule(editedSchedule.schedule_id);
             setSchedules(schedules.filter(schedule => schedule.schedule_id !== editedSchedule.schedule_id));
+            editedSchedule.schedule_id = null;
         }
         setShowDeleteModal(false);
     };
@@ -201,7 +203,7 @@ function Manage_Schedule() {
                                     <Form.Label>Schedule Time</Form.Label>
                                     <DateTimePickerComponent placeholder='Choose a date and time'
                                         value={dateValue} min={dateValue} onChange={(e) =>
-                                            setEditedSchedule({ ...editedSchedule, schedule_datetime: e.target.value.toLocaleString() })}></DateTimePickerComponent>
+                                            setEditedSchedule({ ...editedSchedule, schedule_datetime: e.target.value.toISOString() })}></DateTimePickerComponent>
                                 </Form.Group>
                             </Form>
                         </Modal.Body>
