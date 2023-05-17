@@ -49,19 +49,18 @@ function Book_Cleaning() {
     // Handle Booking  
     const handleBooking = async (data) => {
         Object.assign(data, { user_id: userId, user_email: userEmail, user_name: userName, booking_date: currentDate.toISOString().slice(0, 19).replace('T', ' '), sns_booking_date: currentDate });
+      
         try {
-            //insert data into booking table
-            Axios.post('http://localhost:5001/booking', data).then((res) => {
-                console.log(res);
-                if (res.status === 200){
-                    navigate('/Booking_Confirmation');
-                }
-            });
+          // insert data into booking table
+          const response = await Axios.post('http://localhost:5001/booking', data);
+          if (response.status === 200) {
+            navigate('/Booking_Confirmation', { state: { selectedItem: data } });
+          }
         } catch (error) {
-            console.log(error);
+          console.log(error);
         }
-
-    };
+      };
+      
 
     useEffect(() => {
         Axios.get('http://localhost:5001/get_schedule').then((res) => {
@@ -102,7 +101,7 @@ function Book_Cleaning() {
                                     return (
                                         <>
                                             <React.Fragment key={value.id}>
-                                                <div class="item">
+                                                <div className="item">
                                                     <Paper>
                                                         <div className='parent-paper'>
                                                             <div className='parent-image-maid'>

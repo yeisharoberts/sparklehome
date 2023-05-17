@@ -1,0 +1,18 @@
+.parent-my-booking{
+    background-color: gainsboro;
+    min-height: calc(100vh - 65px);
+    width: 100%;
+}
+
+.parent-col{
+    padding-top: 30px;
+}
+
+.my-booking-title{
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.parent-paper-myBooking{
+    padding: 30px;
+}

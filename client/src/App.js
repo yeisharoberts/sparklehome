@@ -7,13 +7,13 @@ import Confirm_Booking from './Confirm_Booking';
 import Login from './Login';
 import Register from './Register';
 import Admin_Home from './admin_pages/Admin_Home';
-// React
-import { Routes, Route } from 'react-router-dom';
-import { registerLicense } from '@syncfusion/ej2-base';
 import About from './About';
 import Admin_Login from './admin_pages/Admin_Login';
 import Booking_Confirmation from './Booking_Confirmation';
-
+import My_Booking from './My_Booking';
+// React
+import { Routes, Route } from 'react-router-dom';
+import { registerLicense } from '@syncfusion/ej2-base';
 
 function App() {
   registerLicense('ORg4AjUWIQA/Gnt2VFhiQlJPcEBFQmFJfFBmRGFTflZ6dldWACFaRnZdQV1mSXZSdEdjXHpZc3dX')
@@ -30,6 +30,7 @@ function App() {
         <Route path="/Confirm_Booking" element={<Confirm_Booking />} />
         <Route path="/Register" element={<Register />} />
         <Route path='/Booking_Confirmation' element={<Booking_Confirmation />} />
+        <Route path='/My_Booking' element={<My_Booking />} />
       </Routes>
     </div>
   );

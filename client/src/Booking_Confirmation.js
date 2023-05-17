@@ -1,4 +1,7 @@
 import './css/Booking_Confirmation.css';
+import React, {useState, useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
+import Axios from 'axios';
 // Material UI
 import Paper from '@mui/material/Paper';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -9,8 +12,21 @@ import Col from 'react-bootstrap/Col';
 
 function Booking_Confirmation() {
 
+    const navigate = useNavigate();
+    const [loginData, setLoginData] = useState([]);
+    
+    useEffect(() => {
+        Axios.get('http://localhost:5001/login_action').then((res) => {
+            if (res.data.loggedIn) {
+                setLoginData(res.data.user[0]);
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    });
+    
     const handleMyBooking = () => {
-        alert('hello')
+        navigate('/My_Booking');
     }
     return (
         <>
@@ -24,12 +40,12 @@ function Booking_Confirmation() {
                                     <CheckCircleIcon style={{ color: 'green', fontSize: '50px' }} />
                                 </div>
                                 <div style={{ paddingTop: '20px' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'center', fontSize: '25px', fontWeight: '600' }}>Thank you James! </div>
+                                    <div style={{ display: 'flex', justifyContent: 'center', fontSize: '25px', fontWeight: '600' }}>Thank you {loginData.user_name}! </div>
                                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                                         Your booking is confirmed.
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                        A confirmation emai has been sent to james123@gmail.com
+                                        A confirmation email has been sent to {loginData.user_email}
                                     </div>
                                 </div>
                                 <hr />

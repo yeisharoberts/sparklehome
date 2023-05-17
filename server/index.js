@@ -11,9 +11,9 @@ const bodyParser = require('body-parser')
 
 const AWS = require('aws-sdk');
 AWS.config.update({
-    accessKeyId: 'ASIATHXFDTBHR4RI4HO7',
-    secretAccessKey: 'kqmKR17CZ0TMVgyywo0xOIOrIFg52HDvyiu3Q25E',
-    sessionToken: 'FwoGZXIvYXdzECIaDH/bIvEgv7DoXu0v/CLJAcPe0AFtqB49mrsUxbTpbgfh8hYIMaSE3TqJYlzUqvGcsy5a4vbkmUnVjHzC+pi/jiIiGZHlWhA5qEVp1nB8pofubtsXrPMOTLGS6E/9Q6O8Gtgmbcy84vl2GIk/oZ82pgDK7MNtnT9d3Kzf2BQFtnP+j/P+tKDXh9OLXGlHD0wXS6TMbj3DjYFhVfjAEV+DKWikeey1+TPVIJc9SRFV4mLozwds8yYvaqKhlmH4OA56FcqZI2IUR+At92slUfhV4JQ+dTZ9GBganSi7w5CjBjItCGSpw15QPeZmSJXR97l9UuTb9NHcdCRUBCit5z/ysbbYQ+puUMbOAr5QrtoW',
+    accessKeyId: 'ASIATHXFDTBH5XBKWP3X',
+    secretAccessKey: 'Meb5epLDkZ0p/SqN78leuIAR7XxUTjkOTAj9lT1F',
+    sessionToken: 'FwoGZXIvYXdzECoaDD/nMp9n5dcUE6P3ZiLJAWBCBzq8gS2QzlcIq7Vo2x4SBPU5Qv9Pghk3NZRYiDxmOp7Gb2k8/7BaDLMIQAMMkzHm2gr13qJeGvJXNnt6lPylkXzokQ462zkOeQXe69dzGxCjVpAWX8ECQEdJfzY60QV5dxBFGQ6xx6/Rlg/3XhV+tj5d01YGA/UusThMlSR2RCIhH0LN3k4muZxmSnwPUC4k1ItV2lILATJBcQ2IcAko1ZDlhI2iOZn7csJQNYRu6FQZTKIgh90N1UVeA1YOONLEzcXyWAC1giiirJKjBjItf/1zqswjV0AsgbUbSE9edZtwPm0heaXeHa1OHXJFTDtVwLm4bGJjjpb7WlwC',
     region: 'us-east-1'
 });
 app.use(bodyParser.json());
@@ -71,65 +71,69 @@ const sns = new AWS.SNS();
 
 app.post('/booking', async (req, res) => {
     try {
-        const schedule_id = req.body.schedule_id;
-        const user_id = req.body.user_id;
-        const booking_date = req.body.booking_date;
-        const email_date = req.body.sns_booking_date;
-        const maid_name = req.body.maid_name;
-        const maid_phone = req.body.maid_phone;
-
-        connection.query(
-            'INSERT INTO sparklehome.booking (user_id, schedule_id, booking_amount, booking_datetime) VALUES (?, ?, ?, ?)',
-            [user_id, schedule_id, 100.0, booking_date], async (error, result) => {
-                if (error) {
-                    console.log(error);
-                    res.status(500).send('An error occurred during booking');
-                }
-
-                const payload = { schedule_id: schedule_id };
-                console.log(payload)
-                const params = {
-                    FunctionName: 'update-schedule-booked',
-                    Payload: JSON.stringify(payload),
-                };
-
-                try {
-                    const data = await lambda.invoke(params).promise();
-                    console.log('Lambda response:', data.Payload);
-                } catch (error) {
-                    console.error('Lambda error:', error);
-                }
-
-                // Sending booking confirmation email to users using SNS
-                const email = req.body.user_email;
-                const name = req.body.user_name;
-                const message = `Dear ${name}, \n\nThank you for using SparkleHome!\n\nYour booking has been confirmed. Please check your booking details below:
-                \n\nDate & Time: ${email_date}\nCleaner Name: ${maid_name}\nCleaner Contact: ${maid_phone}\n\nBest Regards,\nSparkleHome Team`;
-                const params2 = {
-                    TopicArn: 'arn:aws:sns:us-east-1:222745040975:ConfirmBooking',
-                    Message: message,
-                    MessageAttributes: {
-                        'email': {
-                            DataType: 'String',
-                            StringValue: email,
-                        },
-                    },
-                };
-                sns.publish(params2, (err, data) => {
-                    if (err) {
-                        console.error(err);
-                        return res.status(500).send('Failed to send booking confirmation email');
-                    }
-
-                    console.log(data);
-                    res.send('Booking confirmation email sent successfully');
-                });
-            }
-        );
+      const schedule_id = req.body.schedule_id;
+      const user_id = req.body.user_id;
+      const booking_date = req.body.booking_date;
+      const email_date = req.body.sns_booking_date;
+      const maid_name = req.body.maid_name;
+      const maid_phone = req.body.maid_phone;
+  
+      connection.query(
+        'INSERT INTO sparklehome.booking (user_id, schedule_id, booking_amount, booking_datetime) VALUES (?, ?, ?, ?)',
+        [user_id, schedule_id, 100.0, booking_date],
+        async (error, result) => {
+          if (error) {
+            console.log(error);
+            return res.status(500).send('An error occurred during booking');
+          }
+  
+          const payload = { schedule_id: schedule_id };
+          console.log(payload);
+          const params = {
+            FunctionName: 'update-schedule-booked',
+            Payload: JSON.stringify(payload),
+          };
+  
+          try {
+            const data = await lambda.invoke(params).promise();
+            console.log('Lambda response:', data.Payload);
+  
+            // Only send SNS notification if the Lambda function is successful
+            // Sending booking confirmation email to users using SNS
+            const email = req.body.user_email;
+            const name = req.body.user_name;
+            const message = `Dear ${name}, \n\nThank you for using SparkleHome!\n\nYour booking has been confirmed. Please check your booking details below:
+                  \n\nDate & Time: ${email_date}\nCleaner Name: ${maid_name}\nCleaner Contact: ${maid_phone}\n\nBest Regards,\nSparkleHome Team`;
+            const params2 = {
+              TopicArn: 'arn:aws:sns:us-east-1:222745040975:ConfirmBooking',
+              Message: message,
+              MessageAttributes: {
+                email: {
+                  DataType: 'String',
+                  StringValue: email,
+                },
+              },
+            };
+            sns.publish(params2, (err, data) => {
+              if (err) {
+                console.error(err);
+                return res.status(500).send('Failed to send booking confirmation email');
+              }
+  
+              console.log(data);
+              res.send('Booking confirmation email sent successfully');
+            });
+          } catch (error) {
+            console.error('Lambda error:', error);
+            return res.status(500).send('An error occurred during booking');
+          }
+        }
+      );
     } catch (error) {
-        res.status(500).send('An error occurred during booking');
+      res.status(500).send('An error occurred during booking');
     }
-});
+  });
+  
 
 // const invokeLambda = async (functionName, payload) => {
 //     try {
@@ -310,6 +314,36 @@ app.post('/logout_action', (req, res) => {
     res
         .status(200)
         .json({ success: true, message: "User logged out successfully" });
+});
+
+app.post('/get_my_booking', (req, res) => {
+    const user_id = req.body.user_id;
+    connection.query('SELECT * FROM sparklehome.booking INNER JOIN sparklehome.schedule ON booking.schedule_id = schedule.schedule_id INNER JOIN sparklehome.maid ON schedule.maid_id = maid.maid_id WHERE booking.user_id = ?', [user_id], (err, result) => {
+        if(err) {
+            console.log(err)
+        }else{
+            res.send(result);
+        }
+    });
+});
+
+app.post('/cancel_booking', (req, res) => {
+    const schedule_id = req.body.schedule_id;
+    const booking_id = req.body.booking_id;
+
+    connection.query('DELETE FROM sparklehome.booking WHERE booking.booking_id = ?', [booking_id], (err, result) => {
+        if(err){
+            console.log(err);
+        }else{
+            connection.query('UPDATE sparklehome.schedule SET booked = 0 WHERE schedule_id = ?', [schedule_id], (err, result) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    res.send({code: 200, result: result});
+                }
+            });
+        }
+    });
 });
 
 //get all customers

@@ -31,7 +31,6 @@ function Navigation() {
         });
     });
 
-
     const handleLogout = () => {
         Axios.post('http://localhost:5001/logout_action').then((res) => {
             if (res.data.success) {
@@ -59,7 +58,7 @@ function Navigation() {
                                             title={userDisplay}
                                             menuVariant="dark"
                                         >
-                                            <NavDropdown.Item href="/Book_Cleaning">My Booking</NavDropdown.Item>
+                                            <NavDropdown.Item href="/My_Booking">My Booking</NavDropdown.Item>
                                             <NavDropdown.Divider />
                                             <NavDropdown.Item onClick={handleLogout}>
                                                 Logout
