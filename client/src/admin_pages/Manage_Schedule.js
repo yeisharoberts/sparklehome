@@ -24,7 +24,7 @@ function Manage_Schedule() {
 
     //get
     useEffect(() => {
-        Axios.get('http://localhost:5001/get_all_schedules').then((res) => {
+        Axios.get('http://44.203.38.153/get_all_schedules').then((res) => {
             if (res.data) {
                 console.log(res);
                 setSchedules(res.data)
@@ -37,7 +37,7 @@ function Manage_Schedule() {
 
     //get maid
     useEffect(() => {
-        Axios.get('http://localhost:5001/get_all_maids').then((res) => {
+        Axios.get('http://44.203.38.153/get_all_maids').then((res) => {
             if (res.data) {
                 setMaids(res.data)
             }
@@ -64,7 +64,7 @@ function Manage_Schedule() {
     };
     const addSchedule = (newSchedule) => {
         console.log(newSchedule);
-        Axios.post(`http://localhost:5001/add_schedule`, newSchedule)
+        Axios.post(`http://44.203.38.153/add_schedule`, newSchedule)
             .then((res) => {
                 setToastMessage(res.data.message);
                 setShowToast(true);
@@ -78,7 +78,7 @@ function Manage_Schedule() {
     }
     const updateSchedule = (scheduleId, updatedScheduleData) => {
         console.log(updatedScheduleData);
-        Axios.put(`http://localhost:5001/update_schedule/${scheduleId}`, updatedScheduleData)
+        Axios.put(`http://44.203.38.153/update_schedule/${scheduleId}`, updatedScheduleData)
             .then((res) => {
                 setToastMessage(res.data.message);
                 setShowToast(true);
@@ -100,7 +100,7 @@ function Manage_Schedule() {
         setShowDeleteModal(false);
     };
     const deleteSchedule = (scheduleId) => {
-        Axios.delete(`http://localhost:5001/delete_schedule/${scheduleId}`)
+        Axios.delete(`http://44.203.38.153/delete_schedule/${scheduleId}`)
             .then((res) => {
                 setToastMessage(res.data.message);
                 setButtonDisable(true);

@@ -26,7 +26,7 @@ function Register() {
         if(userName.length < 1 || userEmail.length < 1 || userPassword.length < 1 || userPhone.length < 1){
             setEmpErr(false);
         }else{
-            Axios.post('http://localhost:5001/user_register', {
+            Axios.post('http://44.203.38.153/user_register', {
                 userName: userName,
                 userEmail: userEmail,
                 userPassword: userPassword,

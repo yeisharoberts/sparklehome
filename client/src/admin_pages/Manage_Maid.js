@@ -24,7 +24,7 @@ function Manage_Maid() {
 
     //get
     useEffect(() => {
-        Axios.get('http://localhost:5001/get_all_maids').then((res) => {
+        Axios.get('http://44.203.38.153/get_all_maids').then((res) => {
             if (res.data) {
                 console.log(res);
                 setMaids(res.data)
@@ -51,7 +51,7 @@ function Manage_Maid() {
         setShowFormModal(false);
     };
     const addMaid = (newMaid) => {
-        Axios.post(`http://localhost:5001/add_maid`, newMaid)
+        Axios.post(`http://44.203.38.153/add_maid`, newMaid)
             .then((res) => {
                 setToastMessage(res.data.message);
                 setShowToast(true);
@@ -64,7 +64,7 @@ function Manage_Maid() {
     }
     const updateMaid = (maidId, updatedMaidData) => {
         console.log(updatedMaidData);
-        Axios.put(`http://localhost:5001/update_maid/${maidId}`, updatedMaidData)
+        Axios.put(`http://44.203.38.153/update_maid/${maidId}`, updatedMaidData)
             .then((res) => {
                 setToastMessage(res.data.message);
                 setShowToast(true);
@@ -85,7 +85,7 @@ function Manage_Maid() {
         setShowDeleteModal(false);
     };
     const deleteMaid = (maidId) => {
-        Axios.delete(`http://localhost:5001/delete_maid/${maidId}`)
+        Axios.delete(`http://44.203.38.153/delete_maid/${maidId}`)
             .then((res) => {
                 setToastMessage(res.data.message);
                 setButtonDisable(true);

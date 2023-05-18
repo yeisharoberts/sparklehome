@@ -11,9 +11,9 @@ const bodyParser = require('body-parser')
 
 const AWS = require('aws-sdk');
 AWS.config.update({
-    accessKeyId: 'ASIATHXFDTBH5XBKWP3X',
-    secretAccessKey: 'Meb5epLDkZ0p/SqN78leuIAR7XxUTjkOTAj9lT1F',
-    sessionToken: 'FwoGZXIvYXdzECoaDD/nMp9n5dcUE6P3ZiLJAWBCBzq8gS2QzlcIq7Vo2x4SBPU5Qv9Pghk3NZRYiDxmOp7Gb2k8/7BaDLMIQAMMkzHm2gr13qJeGvJXNnt6lPylkXzokQ462zkOeQXe69dzGxCjVpAWX8ECQEdJfzY60QV5dxBFGQ6xx6/Rlg/3XhV+tj5d01YGA/UusThMlSR2RCIhH0LN3k4muZxmSnwPUC4k1ItV2lILATJBcQ2IcAko1ZDlhI2iOZn7csJQNYRu6FQZTKIgh90N1UVeA1YOONLEzcXyWAC1giiirJKjBjItf/1zqswjV0AsgbUbSE9edZtwPm0heaXeHa1OHXJFTDtVwLm4bGJjjpb7WlwC',
+    accessKeyId: 'ASIATHXFDTBH5IRFC4MF',
+    secretAccessKey: 'HLpGOOxpjuo31WTscA5f37anSo84F8zKY35/WwrV',
+    sessionToken: 'FwoGZXIvYXdzED0aDGQ2Q20BdhkBmJmHByLJAc1s53NIA1dlUdvAjp4Quv3Mv2RkgWD4gedH1dX4Iq4+dRtydsRLgjYRBTWGi8/acURaEjVHv2xR76YDEZpohRwSWi4nuIIR0QrQ4cyncneBC2zg0H70P2WErPQZVwqeZwBh3XOljh5+TLQpJHDLftg9rpGmi0kcIqzzHJ9dsk35MMY6Q1qiPciTdWuY8UVjtRArRnITRmd1wgf0OFX8vVtmCYSws43HhNoNDxB5VOUne3aU1qWTQ3y7ij1gv4Ta2lF/eTiXJlz9aijow5ajBjItIxEpOVyv8HBpjIVJcatoRuOigEQR5gONzO5+50cIGt69ELu5sO6PMr47kSOK',
     region: 'us-east-1'
 });
 app.use(bodyParser.json());
@@ -22,8 +22,8 @@ const lambda = new AWS.Lambda();
 
 app.use(express.json());
 app.use(cors({
-    origin: ["http://localhost:3000"],
-    // origin: ["http://3.91.217.1"],
+    // origin: ["http://localhost:3000"],
+    origin: ["http://44.203.38.153"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     // allowing the cookie to be enabled
     credentials: true
@@ -71,69 +71,85 @@ const sns = new AWS.SNS();
 
 app.post('/booking', async (req, res) => {
     try {
-      const schedule_id = req.body.schedule_id;
-      const user_id = req.body.user_id;
-      const booking_date = req.body.booking_date;
-      const email_date = req.body.sns_booking_date;
-      const maid_name = req.body.maid_name;
-      const maid_phone = req.body.maid_phone;
-  
-      connection.query(
-        'INSERT INTO sparklehome.booking (user_id, schedule_id, booking_amount, booking_datetime) VALUES (?, ?, ?, ?)',
-        [user_id, schedule_id, 100.0, booking_date],
-        async (error, result) => {
-          if (error) {
-            console.log(error);
-            return res.status(500).send('An error occurred during booking');
-          }
-  
-          const payload = { schedule_id: schedule_id };
-          console.log(payload);
-          const params = {
+        const schedule_id = req.body.schedule_id;
+        const user_id = req.body.user_id;
+        const booking_date = req.body.booking_date;
+        const email_date = req.body.sns_booking_date;
+        const maid_name = req.body.maid_name;
+        const maid_phone = req.body.maid_phone;
+
+        const invokeLambdaWithRetry = async (params, retries = 20) => {
+            try {
+                const data = await lambda.invoke(params).promise();
+                console.log('Lambda response:', data.Payload);
+                return data;
+            } catch (error) {
+                console.error('Lambda error:', error);
+                if (retries > 0) {
+                    console.log(`Retrying Lambda invocation. Retries left: ${retries}`);
+                    return invokeLambdaWithRetry(params, retries - 1);
+                } else {
+                    throw error;
+                }
+            }
+        };
+
+        const payload = { schedule_id: schedule_id };
+        console.log(payload);
+        const params = {
             FunctionName: 'update-schedule-booked',
             Payload: JSON.stringify(payload),
-          };
-  
-          try {
-            const data = await lambda.invoke(params).promise();
-            console.log('Lambda response:', data.Payload);
-  
+        };
+
+        try {
+            const data = await invokeLambdaWithRetry(params);
             // Only send SNS notification if the Lambda function is successful
             // Sending booking confirmation email to users using SNS
             const email = req.body.user_email;
             const name = req.body.user_name;
             const message = `Dear ${name}, \n\nThank you for using SparkleHome!\n\nYour booking has been confirmed. Please check your booking details below:
-                  \n\nDate & Time: ${email_date}\nCleaner Name: ${maid_name}\nCleaner Contact: ${maid_phone}\n\nBest Regards,\nSparkleHome Team`;
+          \n\nDate & Time: ${email_date}\nCleaner Name: ${maid_name}\nCleaner Contact: ${maid_phone}\n\nBest Regards,\nSparkleHome Team`;
             const params2 = {
-              TopicArn: 'arn:aws:sns:us-east-1:222745040975:ConfirmBooking',
-              Message: message,
-              MessageAttributes: {
-                email: {
-                  DataType: 'String',
-                  StringValue: email,
+                TopicArn: 'arn:aws:sns:us-east-1:222745040975:ConfirmBooking',
+                Message: message,
+                MessageAttributes: {
+                    email: {
+                        DataType: 'String',
+                        StringValue: email,
+                    },
                 },
-              },
             };
             sns.publish(params2, (err, data) => {
-              if (err) {
-                console.error(err);
-                return res.status(500).send('Failed to send booking confirmation email');
-              }
-  
-              console.log(data);
-              res.send('Booking confirmation email sent successfully');
+                if (err) {
+                    console.error(err);
+                    return res.status(500).send('Failed to send booking confirmation email');
+                }
+
+                console.log(data);
+
+                // Insert the booking into the database
+                connection.query(
+                    'INSERT INTO sparklehome.booking (user_id, schedule_id, booking_amount, booking_datetime) VALUES (?, ?, ?, ?)',
+                    [user_id, schedule_id, 100.0, booking_date],
+                    (error, result) => {
+                        if (error) {
+                            console.log(error);
+                            return res.status(500).send('An error occurred during booking');
+                        }
+
+                        res.send('Booking confirmation email sent successfully');
+                    }
+                );
             });
-          } catch (error) {
+        } catch (error) {
             console.error('Lambda error:', error);
             return res.status(500).send('An error occurred during booking');
-          }
         }
-      );
     } catch (error) {
-      res.status(500).send('An error occurred during booking');
+        res.status(500).send('An error occurred during booking');
     }
-  });
-  
+});
+
 
 // const invokeLambda = async (functionName, payload) => {
 //     try {
@@ -215,11 +231,11 @@ connection.query('use sparklehome', function (err, results) {
 
 setInterval(() => {
     connection.query('SELECT 1', (error, results) => {
-      if (error) {
-        console.error('Error executing keep-alive query:', error);
-      }
+        if (error) {
+            console.error('Error executing keep-alive query:', error);
+        }
     });
-  }, 5 * 60 * 1000); // 5 minutes
+}, 5 * 60 * 1000); // 5 minutes
 
 app.get('/login_action', (req, res) => {
     if (req.session.user) {
@@ -319,9 +335,9 @@ app.post('/logout_action', (req, res) => {
 app.post('/get_my_booking', (req, res) => {
     const user_id = req.body.user_id;
     connection.query('SELECT * FROM sparklehome.booking INNER JOIN sparklehome.schedule ON booking.schedule_id = schedule.schedule_id INNER JOIN sparklehome.maid ON schedule.maid_id = maid.maid_id WHERE booking.user_id = ?', [user_id], (err, result) => {
-        if(err) {
+        if (err) {
             console.log(err)
-        }else{
+        } else {
             res.send(result);
         }
     });
@@ -332,14 +348,14 @@ app.post('/cancel_booking', (req, res) => {
     const booking_id = req.body.booking_id;
 
     connection.query('DELETE FROM sparklehome.booking WHERE booking.booking_id = ?', [booking_id], (err, result) => {
-        if(err){
+        if (err) {
             console.log(err);
-        }else{
+        } else {
             connection.query('UPDATE sparklehome.schedule SET booked = 0 WHERE schedule_id = ?', [schedule_id], (err, result) => {
-                if(err){
+                if (err) {
                     console.log(err);
-                }else{
-                    res.send({code: 200, result: result});
+                } else {
+                    res.send({ code: 200, result: result });
                 }
             });
         }

@@ -7,6 +7,7 @@ import Chris from './img/chris.jpg'
 // Bootstrap
 import Alert from '@mui/material/Alert';
 import Modal from 'react-bootstrap/Modal';
+import Spinner from 'react-bootstrap/Spinner';
 // Material UI
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
@@ -33,8 +34,13 @@ function Book_Cleaning() {
     const [userEmail, setUserEmail] = useState('');
     const [userName, setUserName] = useState('');
     const [selectedItem, setSelectedItem] = useState(null);
+    const [showSpinner, setShowSpinner] = useState(false);
 
-    const handleClose = () => setBookingModal(false);
+    const handleClose = () => {
+        setBookingModal(false);
+        setShowSpinner(false);
+    }
+
     const handleShow = (item) => {
         setBookingModal(true);
         setSelectedItem(item);
@@ -49,25 +55,25 @@ function Book_Cleaning() {
     // Handle Booking  
     const handleBooking = async (data) => {
         Object.assign(data, { user_id: userId, user_email: userEmail, user_name: userName, booking_date: currentDate.toISOString().slice(0, 19).replace('T', ' '), sns_booking_date: currentDate });
-      
+        setShowSpinner(true);
         try {
-          // insert data into booking table
-          const response = await Axios.post('http://localhost:5001/booking', data);
-          if (response.status === 200) {
-            navigate('/Booking_Confirmation', { state: { selectedItem: data } });
-          }
+            // insert data into booking table
+            const response = await Axios.post('http://44.203.38.153/booking', data);
+            if (response.status === 200) {
+                navigate('/Booking_Confirmation', { state: { selectedItem: data } });
+            }
         } catch (error) {
-          console.log(error);
+            console.log(error);
         }
-      };
-      
+    };
+
 
     useEffect(() => {
-        Axios.get('http://localhost:5001/get_schedule').then((res) => {
+        Axios.get('http://44.203.38.153/get_schedule').then((res) => {
             setScheduleList(res.data);
         });
 
-        Axios.get('http://localhost:5001/login_action').then((res) => {
+        Axios.get('http://44.203.38.153/login_action').then((res) => {
             if (res.data.loggedIn) {
                 setUserId(res.data.user[0].user_id);
                 setUserEmail(res.data.user[0].user_email);
@@ -172,7 +178,9 @@ function Book_Cleaning() {
                                                                 handleBooking(selectedItem);
                                                             }}
                                                         >
-                                                            Confirm Booking
+                                                            {showSpinner ? <Spinner animation="border" role="status">
+                                                                <span className="visually-hidden">Loading...</span>
+                                                            </Spinner> : 'Confirm Booking'}
                                                         </Button>
                                                     </Modal.Footer>
                                                 </Modal>

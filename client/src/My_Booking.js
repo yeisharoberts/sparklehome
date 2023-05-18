@@ -30,7 +30,7 @@ function My_Booking() {
     const [showToast, setShowToast] = useState(false);
 
     useEffect(() => {
-        Axios.get('http://localhost:5001/login_action')
+        Axios.get('http://44.203.38.153/login_action')
             .then((res) => {
                 if (res.data.loggedIn) {
                     setLoginData(res.data.user[0]);
@@ -44,7 +44,7 @@ function My_Booking() {
 
     useEffect(() => {
         if (loginData.user_id) {
-            Axios.post('http://localhost:5001/get_my_booking', {
+            Axios.post('http://44.203.38.153/get_my_booking', {
                 user_id: loginData.user_id
             })
                 .then((res) => {
@@ -57,7 +57,7 @@ function My_Booking() {
     }, [loginData, selectedItem, myBookings]);
 
     const handleCancelBooking = () => {
-        Axios.post('http://localhost:5001/cancel_booking', {
+        Axios.post('http://44.203.38.153/cancel_booking', {
             schedule_id: selectedItem.schedule_id,
             booking_id: selectedItem.booking_id
         }).then((res) => {

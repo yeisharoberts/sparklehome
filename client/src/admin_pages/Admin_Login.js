@@ -26,7 +26,7 @@ function Admin_Login() {
             setEmpErr(false);
             setErrMsg(true);
         } else {
-            Axios.post('http://localhost:5001/admin_login', {
+            Axios.post('http://44.203.38.153/admin_login', {
                 inputEmail: inputEmail,
                 inputPassword: inputPassword
             }).then((result) => {
