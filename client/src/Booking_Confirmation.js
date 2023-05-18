@@ -16,7 +16,7 @@ function Booking_Confirmation() {
     const [loginData, setLoginData] = useState([]);
     
     useEffect(() => {
-        Axios.get('http://44.203.38.153/login_action').then((res) => {
+        Axios.get('http://100.27.20.250/login_action').then((res) => {
             if (res.data.loggedIn) {
                 setLoginData(res.data.user[0]);
             }

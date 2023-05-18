@@ -15,7 +15,7 @@ function Manage_Customer() {
     const [toastMessage, setToastMessage] = useState();
 
     useEffect(() => {
-        Axios.get('http://44.203.38.153/get_all_customers').then((res) => {
+        Axios.get('http://100.27.20.250/get_all_customers').then((res) => {
             if (res.data) {
                 setUsers(res.data)
             }
@@ -43,7 +43,7 @@ function Manage_Customer() {
     };
 
     const updateUser = (userId, updatedUserData) => {
-        Axios.put(`http://44.203.38.153/update_user/${userId}`, updatedUserData)
+        Axios.put(`http://100.27.20.250/update_user/${userId}`, updatedUserData)
             .then((res) => {
                 setToastMessage(res.data.message);
                 setShowToast(true);
@@ -64,7 +64,7 @@ function Manage_Customer() {
         setShowDeleteModal(false);
     };
     const deleteUser = (userId) => {
-        Axios.delete(`http://44.203.38.153/delete_user/${userId}`)
+        Axios.delete(`http://100.27.20.250/delete_user/${userId}`)
             .then((res) => {
                 setToastMessage(res.data.message);
                 setShowToast(true);

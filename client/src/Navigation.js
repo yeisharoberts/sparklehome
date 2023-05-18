@@ -20,7 +20,7 @@ function Navigation() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        Axios.get('http://44.203.38.153/login_action').then((res) => {
+        Axios.get('http://100.27.20.250/login_action').then((res) => {
             if (res.data.loggedIn) {
                 setDisplayName(res.data.user[0].user_name)
             }
@@ -32,7 +32,7 @@ function Navigation() {
     });
 
     const handleLogout = () => {
-        Axios.post('http://44.203.38.153/logout_action').then((res) => {
+        Axios.post('http://100.27.20.250/logout_action').then((res) => {
             if (res.data.success) {
                 setLoginBool(false);
                 navigate("/Login");

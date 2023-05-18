@@ -58,7 +58,7 @@ function Book_Cleaning() {
         setShowSpinner(true);
         try {
             // insert data into booking table
-            const response = await Axios.post('http://44.203.38.153/booking', data);
+            const response = await Axios.post('http://100.27.20.250/booking', data);
             if (response.status === 200) {
                 navigate('/Booking_Confirmation', { state: { selectedItem: data } });
             }
@@ -69,11 +69,11 @@ function Book_Cleaning() {
 
 
     useEffect(() => {
-        Axios.get('http://44.203.38.153/get_schedule').then((res) => {
+        Axios.get('http://100.27.20.250/get_schedule').then((res) => {
             setScheduleList(res.data);
         });
 
-        Axios.get('http://44.203.38.153/login_action').then((res) => {
+        Axios.get('http://100.27.20.250/login_action').then((res) => {
             if (res.data.loggedIn) {
                 setUserId(res.data.user[0].user_id);
                 setUserEmail(res.data.user[0].user_email);

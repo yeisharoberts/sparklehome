@@ -23,7 +23,7 @@ const lambda = new AWS.Lambda();
 app.use(express.json());
 app.use(cors({
     // origin: ["http://localhost:3000"],
-    origin: ["http://44.203.38.153"],
+    origin: ["http://100.27.20.250"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     // allowing the cookie to be enabled
     credentials: true
